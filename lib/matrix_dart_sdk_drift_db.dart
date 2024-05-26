@@ -32,44 +32,51 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   Future<void> addSeenDeviceId(
       String userId, String deviceId, String publicKeys) {
-    // TODO: implement addSeenDeviceId
-    throw UnimplementedError();
+    return db.into(db.seenDeviceId).insertOnConflictUpdate(
+        SeenDeviceIdCompanion.insert(
+            userId: userId, deviceId: deviceId, publicKeys: publicKeys));
   }
 
   @override
   Future<void> addSeenPublicKey(String publicKey, String deviceId) {
-    // TODO: implement addSeenPublicKey
-    throw UnimplementedError();
+    return db.into(db.seenPublicKey).insertOnConflictUpdate(
+        SeenPublicKeyCompanion.insert(
+            publicKey: publicKey, deviceId: deviceId));
   }
 
   @override
-  Future<void> clear() {
-    // TODO: implement clear
-    throw UnimplementedError();
+  Future<void> clear() async {
+    await db.customStatement('PRAGMA foreign_keys = OFF');
+    try {
+      await transaction(() async {
+        for (final table in db.allTables) {
+          await db.delete(table).go();
+        }
+      });
+    } finally {
+      await db.customStatement('PRAGMA foreign_keys = ON');
+    }
   }
 
   @override
-  Future<void> clearCache() {
-    // TODO: implement clearCache
-    throw UnimplementedError();
-  }
+  Future<void> clearCache() async {}
 
   @override
   Future clearSSSSCache() {
-    // TODO: implement clearSSSSCache
-    throw UnimplementedError();
+    return db.delete(db.sSSSCacheData).go();
   }
 
   @override
   Future close() {
-    // TODO: implement close
-    throw UnimplementedError();
+    return db.close();
   }
 
   @override
-  Future<void> delete() {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<void> delete() async {
+    await clear();
+    await db.close();
+
+    //TODO: Actually delete the file
   }
 
   @override
@@ -88,14 +95,18 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<void> deleteTimelineForRoom(String roomId) {
-    // TODO: implement deleteTimelineForRoom
-    throw UnimplementedError();
+    return (db.delete(db.timelineFragmentData)
+          ..where((tbl) => tbl.roomId.equals(roomId)))
+        .go();
   }
 
   @override
-  Future<String?> deviceIdSeen(userId, deviceId) {
-    // TODO: implement deviceIdSeen
-    throw UnimplementedError();
+  Future<String?> deviceIdSeen(userId, deviceId) async {
+    return (await (db.select(db.seenDeviceId)
+              ..where((tbl) =>
+                  tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+            .getSingleOrNull())
+        ?.publicKeys;
   }
 
   @override
@@ -147,15 +158,39 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<List<StoredInboundGroupSession>> getAllInboundGroupSessions() {
-    // TODO: implement getAllInboundGroupSessions
-    throw UnimplementedError();
+  Future<List<StoredInboundGroupSession>> getAllInboundGroupSessions() async {
+    var data = await db.select(db.inboundGroupSession).get();
+
+    return (data.map((e) => StoredInboundGroupSession(
+        roomId: e.roomId,
+        sessionId: e.sessionId,
+        pickle: e.pickle,
+        content: e.content,
+        indexes: e.indexes,
+        allowedAtIndex: e.allowedAtIndex,
+        uploaded: e.uploaded,
+        senderKey: e.senderKey,
+        senderClaimedKeys: e.senderClaimedKey))).toList();
   }
 
   @override
-  Future<Map<String, Map>> getAllOlmSessions() {
-    // TODO: implement getAllOlmSessions
-    throw UnimplementedError();
+  Future<Map<String, Map>> getAllOlmSessions() async {
+    var data = await db.select(db.olmSessionData).get();
+
+    var result = <String, Map>{};
+    for (var entry in data) {
+      if (result.containsKey(entry.identityKey) == false) {
+        result[entry.identityKey] = {};
+      }
+      result[entry.identityKey]![entry.sessionId] = {
+        "identity_key": entry.identityKey,
+        "pickle": entry.pickle,
+        "session_id": entry.sessionId,
+        "last_received": entry.lastReceived,
+      };
+    }
+
+    return result;
   }
 
   @override
@@ -203,9 +238,36 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<List<String>> getEventIdList(Room room,
-      {int start = 0, bool includeSending = false, int? limit}) {
-    // TODO: implement getEventIdList
-    throw UnimplementedError();
+      {int start = 0, bool includeSending = false, int? limit}) async {
+    return await db.transaction(() async {
+      var sending = includeSending
+          ? await (db.select(db.timelineFragmentData)
+                ..where((tbl) =>
+                    tbl.roomId.equals(room.id) & tbl.sending.equals(true)))
+              .getSingleOrNull()
+          : null;
+
+      var sent = await (db.select(db.timelineFragmentData)
+            ..where((tbl) =>
+                tbl.roomId.equals(room.id) & tbl.sending.equals(false)))
+          .getSingleOrNull();
+
+      if (sent == null) return <String>[];
+
+      var sendingFragments =
+          sending == null ? null : (jsonDecode(sending.fragmentsList) as List);
+
+      var sentFragments = jsonDecode(sent.fragmentsList) as List;
+
+      final eventIds = sendingFragments != null
+          ? sendingFragments + sentFragments
+          : sentFragments;
+      if (limit != null && eventIds.length > limit) {
+        eventIds.removeRange(limit, eventIds.length);
+      }
+
+      return List<String>.from(eventIds);
+    });
   }
 
   @override
@@ -264,48 +326,110 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<StoredInboundGroupSession?> getInboundGroupSession(
-      String roomId, String sessionId) {
-    // TODO: implement getInboundGroupSession
-    throw UnimplementedError();
+      String roomId, String sessionId) async {
+    var data = await (db.select(db.inboundGroupSession)
+          ..where((tbl) =>
+              tbl.roomId.equals(roomId) & tbl.sessionId.equals(sessionId)))
+        .getSingleOrNull();
+
+    if (data == null) {
+      return null;
+    }
+
+    return StoredInboundGroupSession(
+        roomId: data.roomId,
+        sessionId: data.sessionId,
+        pickle: data.pickle,
+        content: data.content,
+        indexes: data.indexes,
+        allowedAtIndex: data.allowedAtIndex,
+        uploaded: data.uploaded,
+        senderKey: data.senderKey,
+        senderClaimedKeys: data.senderClaimedKey);
   }
 
   @override
-  Future<List<StoredInboundGroupSession>> getInboundGroupSessionsToUpload() {
-    // TODO: implement getInboundGroupSessionsToUpload
-    throw UnimplementedError();
+  Future<List<StoredInboundGroupSession>>
+      getInboundGroupSessionsToUpload() async {
+    var data = await (db.select(db.inboundGroupSession)
+          ..where((tbl) => tbl.uploaded.equals(false)))
+        .get();
+
+    return (data.map((e) => StoredInboundGroupSession(
+        roomId: e.roomId,
+        sessionId: e.sessionId,
+        pickle: e.pickle,
+        content: e.content,
+        indexes: e.indexes,
+        allowedAtIndex: e.allowedAtIndex,
+        uploaded: e.uploaded,
+        senderKey: e.senderKey,
+        senderClaimedKeys: e.senderClaimedKey))).toList();
   }
 
   @override
   Future<List<String>> getLastSentMessageUserDeviceKey(
-      String userId, String deviceId) {
-    // TODO: implement getLastSentMessageUserDeviceKey
-    throw UnimplementedError();
+      String userId, String deviceId) async {
+    var data = await (db.select(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .getSingleOrNull();
+    if (data == null) return [];
+
+    return [data.lastSentMessage];
   }
 
   @override
-  Future<List<OlmSession>> getOlmSessions(String identityKey, String userId) {
-    // TODO: implement getOlmSessions
-    throw UnimplementedError();
+  Future<List<OlmSession>> getOlmSessions(
+      String identityKey, String userId) async {
+    var data = await (db.select(db.olmSessionData)
+          ..where((tbl) => tbl.identityKey.equals(identityKey)))
+        .get();
+
+    return data
+        .map((e) => OlmSession.fromJson({
+              'identity_key': e.identityKey,
+              'pickle': e.pickle,
+              'session_id': e.sessionId,
+              'last_received': e.lastReceived
+            }, userId))
+        .toList();
   }
 
   @override
   Future<List<OlmSession>> getOlmSessionsForDevices(
-      List<String> identityKeys, String userId) {
-    // TODO: implement getOlmSessionsForDevices
-    throw UnimplementedError();
+      List<String> identityKeys, String userId) async {
+    final sessions =
+        await Future.wait(identityKeys.map((e) => getOlmSessions(e, userId)));
+    return <OlmSession>[for (final sublist in sessions) ...sublist];
   }
 
   @override
   Future<OutboundGroupSession?> getOutboundGroupSession(
-      String roomId, String userId) {
-    // TODO: implement getOutboundGroupSession
-    throw UnimplementedError();
+      String roomId, String userId) async {
+    var data = await (db.select(db.outboundGroupSessionData)
+          ..where((tbl) => tbl.roomId.equals(roomId)))
+        .getSingleOrNull();
+
+    if (data == null) return null;
+
+    return OutboundGroupSession.fromJson({
+      "room_id": data.roomId,
+      "pickle": data.pickle,
+      "device_ids": data.deviceIds,
+      "creation_time": data.creationTime,
+    }, userId);
   }
 
   @override
-  Future<CachedPresence?> getPresence(String userId) {
-    // TODO: implement getPresence
-    throw UnimplementedError();
+  Future<CachedPresence?> getPresence(String userId) async {
+    var data = await (db.select(db.presenceData)
+          ..where((tbl) => tbl.userId.equals(userId)))
+        .getSingleOrNull();
+
+    if (data == null) return null;
+
+    return CachedPresence.fromJson(jsonDecode(data.presence));
   }
 
   @override
@@ -354,9 +478,20 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<SSSSCache?> getSSSSCache(String type) {
-    // TODO: implement getSSSSCache
-    throw UnimplementedError();
+  Future<SSSSCache?> getSSSSCache(String type) async {
+    var data = await (db.select(db.sSSSCacheData)
+          ..where((tbl) => tbl.type.equals(type)))
+        .getSingleOrNull();
+
+    if (data == null) {
+      return null;
+    }
+
+    return SSSSCache(
+        type: data.type,
+        keyId: data.keyId,
+        ciphertext: data.cipherText,
+        content: data.content);
   }
 
   @override
@@ -402,9 +537,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<List<Event>> getUnimportantRoomEventStatesForRoom(
-      List<String> events, Room room) {
-    // TODO: implement getUnimportantRoomEventStatesForRoom
-    throw UnimplementedError();
+      List<String> events, Room room) async {
+    var states = await (db.select(db.nonPreloadRoomState)
+          ..where((tbl) => tbl.roomId.equals(room.id) & tbl.type.isIn(events)))
+        .get();
+
+    return states
+        .map((e) => Event.fromJson(jsonDecode(e.content), room))
+        .toList();
   }
 
   @override
@@ -422,9 +562,62 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<Map<String, DeviceKeysList>> getUserDeviceKeys(Client client) {
-    // TODO: implement getUserDeviceKeys
-    throw UnimplementedError();
+  Future<Map<String, DeviceKeysList>> getUserDeviceKeys(Client client) async {
+    return {};
+    // return db.transaction(() async {
+    //   var keyInfos = await db.select(db.userDeviceKeyInfo).get();
+    //   if (keyInfos.isEmpty) {
+    //     return {};
+    //   }
+
+    //   final keyIsOutdated = <String, bool>{
+    //     for (var entry in keyInfos) entry.userId: entry.outdated
+    //   };
+
+    //   final userDeviceKeys = await db.select(db.userDeviceKey).get();
+
+    // final userCrossSigningKeys = await db.select(db.userCrossSigningKeys).get()
+    // final userCrossSigningKeys =
+    //     await instance.userCrossSigningKeys.where().findAll();
+
+    // final res = <String, DeviceKeysList>{};
+
+    // for (final entry in keyInfos) {
+    //   var crossSigningKeys = userCrossSigningKeys
+    //       .where((element) => element.userId == entry.userId)
+    //       .toList();
+
+    //   var childEntries = userDeviceKeys
+    //       .where((element) => element.userId == entry.userId)
+    //       .toList();
+
+    //   res[entry.userId] = DeviceKeysList.fromDbJson(
+    //       {
+    //         'client_id': client.id,
+    //         'user_id': entry.userId,
+    //         'outdated': keyIsOutdated[entry.userId],
+    //       },
+    //       childEntries
+    //           .map((e) => {
+    //                 "device_id": e.deviceId,
+    //                 "verified": e.verified,
+    //                 "blocked": e.blocked,
+    //                 "content": jsonDecode(e.content)
+    //               })
+    //           .toList(),
+    //       crossSigningKeys
+    //           .map((e) => <String, dynamic>{
+    //                 "public_key": e.publicKey,
+    //                 "verified": e.verified,
+    //                 "blocked": e.blocked,
+    //                 "content": jsonDecode(e.content ?? "{}")
+    //               })
+    //           .toList(),
+    //       client);
+    // }
+
+    // return res;
+    // });
   }
 
   @override
@@ -481,21 +674,36 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future markInboundGroupSessionAsUploaded(String roomId, String sessionId) {
-    // TODO: implement markInboundGroupSessionAsUploaded
-    throw UnimplementedError();
+  Future markInboundGroupSessionAsUploaded(
+      String roomId, String sessionId) async {
+    await db.transaction(() async {
+      var existing = await (db.select(db.inboundGroupSession)
+            ..where((tbl) =>
+                tbl.roomId.equals(roomId) & tbl.sessionId.equals(sessionId)))
+          .getSingleOrNull();
+
+      if (existing == null) {
+        return;
+      }
+
+      db
+          .into(db.inboundGroupSession)
+          .insertOnConflictUpdate(existing.copyWith(uploaded: true));
+    });
   }
 
   @override
-  Future markInboundGroupSessionsAsNeedingUpload() {
-    // TODO: implement markInboundGroupSessionsAsNeedingUpload
-    throw UnimplementedError();
+  Future markInboundGroupSessionsAsNeedingUpload() async {
+    return db.update(db.inboundGroupSession)
+      ..write(const InboundGroupSessionCompanion(uploaded: Value(false)));
   }
 
   @override
-  Future<String?> publicKeySeen(String publicKey) {
-    // TODO: implement publicKeySeen
-    throw UnimplementedError();
+  Future<String?> publicKeySeen(String publicKey) async {
+    return (await (db.select(db.seenPublicKey)
+              ..where((tbl) => tbl.publicKey.equals(publicKey)))
+            .getSingleOrNull())
+        ?.deviceId;
   }
 
   @override
@@ -524,47 +732,93 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future removeOutboundGroupSession(String roomId) {
-    // TODO: implement removeOutboundGroupSession
-    throw UnimplementedError();
+    return (db.delete(db.outboundGroupSessionData)
+          ..where((tbl) => tbl.roomId.equals(roomId)))
+        .go();
   }
 
   @override
   Future removeUserCrossSigningKey(String userId, String publicKey) {
-    // TODO: implement removeUserCrossSigningKey
-    throw UnimplementedError();
+    return (db.delete(db.userCrossSigningKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.publicKey.equals(publicKey)))
+        .go();
   }
 
   @override
   Future removeUserDeviceKey(String userId, String deviceId) {
-    // TODO: implement removeUserDeviceKey
-    throw UnimplementedError();
+    return (db.delete(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .go();
   }
 
   @override
   Future setBlockedUserCrossSigningKey(
-      bool blocked, String userId, String publicKey) {
-    // TODO: implement setBlockedUserCrossSigningKey
-    throw UnimplementedError();
+      bool blocked, String userId, String publicKey) async {
+    var existing = await (db.select(db.userCrossSigningKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.publicKey.equals(publicKey)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      return;
+    }
+
+    await db
+        .into(db.userCrossSigningKey)
+        .insertOnConflictUpdate(existing.copyWith(blocked: blocked));
   }
 
   @override
-  Future setBlockedUserDeviceKey(bool blocked, String userId, String deviceId) {
-    // TODO: implement setBlockedUserDeviceKey
-    throw UnimplementedError();
+  Future setBlockedUserDeviceKey(
+      bool blocked, String userId, String deviceId) async {
+    var existing = await (db.select(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      return;
+    }
+
+    await db
+        .into(db.userDeviceKey)
+        .insertOnConflictUpdate(existing.copyWith(blocked: blocked));
   }
 
   @override
   Future setLastActiveUserDeviceKey(
-      int lastActive, String userId, String deviceId) {
-    // TODO: implement setLastActiveUserDeviceKey
-    throw UnimplementedError();
+      int lastActive, String userId, String deviceId) async {
+    var key = await (db.select(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .getSingleOrNull();
+
+    if (key == null) {
+      return;
+    }
+
+    await db
+        .into(db.userDeviceKey)
+        .insertOnConflictUpdate(key.copyWith(lastActive: lastActive));
   }
 
   @override
   Future setLastSentMessageUserDeviceKey(
-      String lastSentMessage, String userId, String deviceId) {
-    // TODO: implement setLastSentMessageUserDeviceKey
-    throw UnimplementedError();
+      String lastSentMessage, String userId, String deviceId) async {
+    var key = await (db.select(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .getSingleOrNull();
+
+    if (key == null) {
+      return;
+    }
+
+    await db
+        .into(db.userDeviceKey)
+        .insertOnConflictUpdate(key.copyWith(lastSentMessage: lastSentMessage));
   }
 
   @override
@@ -591,16 +845,36 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future setVerifiedUserCrossSigningKey(
-      bool verified, String userId, String publicKey) {
-    // TODO: implement setVerifiedUserCrossSigningKey
-    throw UnimplementedError();
+      bool verified, String userId, String publicKey) async {
+    var existing = await (db.select(db.userCrossSigningKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.publicKey.equals(publicKey)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      return;
+    }
+
+    await db
+        .into(db.userCrossSigningKey)
+        .insertOnConflictUpdate(existing.copyWith(verified: verified));
   }
 
   @override
   Future setVerifiedUserDeviceKey(
-      bool verified, String userId, String deviceId) {
-    // TODO: implement setVerifiedUserDeviceKey
-    throw UnimplementedError();
+      bool verified, String userId, String deviceId) async {
+    var existing = await (db.select(db.userDeviceKey)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) & tbl.deviceId.equals(deviceId)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      return;
+    }
+
+    await db
+        .into(db.userDeviceKey)
+        .insertOnConflictUpdate(existing.copyWith(verified: verified));
   }
 
   @override
@@ -855,34 +1129,59 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       String allowedAtIndex,
       String senderKey,
       String senderClaimedKey) {
-    // TODO: implement storeInboundGroupSession
-    throw UnimplementedError();
+    return db.into(db.inboundGroupSession).insertOnConflictUpdate(
+        InboundGroupSessionCompanion.insert(
+            roomId: roomId,
+            sessionId: sessionId,
+            pickle: pickle,
+            content: content,
+            indexes: indexes,
+            allowedAtIndex: allowedAtIndex,
+            senderKey: senderKey,
+            senderClaimedKey: senderClaimedKey,
+            uploaded: false));
   }
 
   @override
   Future storeOlmSession(
       String identityKey, String sessionId, String pickle, int lastReceived) {
-    // TODO: implement storeOlmSession
-    throw UnimplementedError();
+    return db.into(db.olmSessionData).insertOnConflictUpdate(
+        OlmSessionDataCompanion.insert(
+            identityKey: identityKey,
+            sessionId: sessionId,
+            pickle: pickle,
+            lastReceived: lastReceived));
   }
 
   @override
   Future storeOutboundGroupSession(
       String roomId, String pickle, String deviceIds, int creationTime) {
-    // TODO: implement storeOutboundGroupSession
-    throw UnimplementedError();
+    return db.into(db.outboundGroupSessionData).insertOnConflictUpdate(
+        OutboundGroupSessionDataCompanion.insert(
+            roomId: roomId,
+            pickle: pickle,
+            deviceIds: deviceIds,
+            creationTime: creationTime));
   }
 
   @override
   Future<void> storePresence(String userId, CachedPresence presence) {
-    // TODO: implement storePresence
-    throw UnimplementedError();
+    return db.into(db.presenceData).insertOnConflictUpdate(
+        PresenceDataCompanion.insert(
+            userId: userId, presence: jsonEncode(presence.toJson())));
   }
 
   @override
-  Future storePrevBatch(String prevBatch) {
-    // TODO: implement storePrevBatch
-    throw UnimplementedError();
+  Future storePrevBatch(String prevBatch) async {
+    var data = await (db.select(db.clientData)).getSingleOrNull();
+
+    if (data == null) {
+      return null;
+    }
+
+    await (db
+        .into(db.clientData)
+        .insertOnConflictUpdate(data.copyWith(prevBatch: Value(prevBatch))));
   }
 
   @override
@@ -961,8 +1260,12 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   Future storeSSSSCache(
       String type, String keyId, String ciphertext, String content) {
-    // TODO: implement storeSSSSCache
-    throw UnimplementedError();
+    return db.sSSSCacheData.insertOnConflictUpdate(
+        SSSSCacheDataCompanion.insert(
+            type: type,
+            keyId: keyId,
+            cipherText: ciphertext,
+            content: content));
   }
 
   @override
@@ -978,21 +1281,32 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   Future storeUserCrossSigningKey(String userId, String publicKey,
       String content, bool verified, bool blocked) {
-    // TODO: implement storeUserCrossSigningKey
-    throw UnimplementedError();
+    return db.into(db.userCrossSigningKey).insertOnConflictUpdate(
+        UserCrossSigningKeyCompanion.insert(
+            userId: userId,
+            publicKey: publicKey,
+            verified: verified,
+            blocked: blocked));
   }
 
   @override
   Future storeUserDeviceKey(String userId, String deviceId, String content,
       bool verified, bool blocked, int lastActive) {
-    // TODO: implement storeUserDeviceKey
-    throw UnimplementedError();
+    return db.into(db.userDeviceKey).insertOnConflictUpdate(
+        UserDeviceKeyCompanion.insert(
+            userId: userId,
+            deviceId: deviceId,
+            content: content,
+            lastSentMessage: "",
+            verified: verified,
+            blocked: blocked,
+            lastActive: lastActive));
   }
 
   @override
   Future storeUserDeviceKeysInfo(String userId, bool outdated) {
-    // TODO: implement storeUserDeviceKeysInfo
-    throw UnimplementedError();
+    return db.into(db.userDeviceKeyInfo).insertOnConflictUpdate(
+        UserDeviceKeyInfoCompanion.insert(userId: userId, outdated: outdated));
   }
 
   @override
@@ -1046,15 +1360,44 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future updateInboundGroupSessionAllowedAtIndex(
-      String allowedAtIndex, String roomId, String sessionId) {
-    // TODO: implement updateInboundGroupSessionAllowedAtIndex
-    throw UnimplementedError();
+      String allowedAtIndex, String roomId, String sessionId) async {
+    await db.transaction(() async {
+      var data = await (db.select(db.inboundGroupSession)
+            ..where((tbl) =>
+                tbl.roomId.equals(roomId) & tbl.sessionId.equals(sessionId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (data == null) {
+        print(
+            "tried to update group session allowed indices of a session which was not found in db");
+        return;
+      }
+
+      await db.into(db.inboundGroupSession).insertOnConflictUpdate(
+          data.copyWith(allowedAtIndex: allowedAtIndex));
+    });
   }
 
   @override
   Future updateInboundGroupSessionIndexes(
-      String indexes, String roomId, String sessionId) {
-    // TODO: implement updateInboundGroupSessionIndexes
-    throw UnimplementedError();
+      String indexes, String roomId, String sessionId) async {
+    await db.transaction(() async {
+      var data = await (db.select(db.inboundGroupSession)
+            ..where((tbl) =>
+                tbl.roomId.equals(roomId) & tbl.sessionId.equals(sessionId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (data == null) {
+        print(
+            "tried to update group session indices of a session which was not found in db");
+        return;
+      }
+
+      await db
+          .into(db.inboundGroupSession)
+          .insertOnConflictUpdate(data.copyWith(indexes: indexes));
+    });
   }
 }

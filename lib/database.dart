@@ -13,7 +13,17 @@ part 'database.g.dart';
   RoomAccountData,
   EventData,
   TimelineFragmentData,
-  RoomMembers
+  RoomMembers,
+  InboundGroupSession,
+  OutboundGroupSessionData,
+  SSSSCacheData,
+  OlmSessionData,
+  SeenDeviceId,
+  SeenPublicKey,
+  UserDeviceKey,
+  UserDeviceKeyInfo,
+  UserCrossSigningKey,
+  PresenceData,
 ])
 class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
   MatrixSdkDriftDBImplementation(super.e);

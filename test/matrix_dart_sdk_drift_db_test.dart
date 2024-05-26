@@ -21,14 +21,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:drift/native.dart';
-import 'package:file/local.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 import 'package:test/test.dart';
 
 import 'package:matrix/matrix.dart';
-
-import 'package:path_provider_linux/path_provider_linux.dart';
 
 String createLargeString(String character, int desiredSize) {
   final buffer = StringBuffer();
@@ -46,8 +43,6 @@ Future<MatrixSdkDriftDatabase> getDatabase(Client? c) async {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  PathProviderLinux.registerWith();
-
   final databaseBuilders = {
     'Drift Database': getDatabase,
   };
@@ -66,7 +61,7 @@ void main() {
           expect(counter++, 0);
           await database.transaction(() async {
             expect(counter++, 1);
-            await Future.delayed(Duration(milliseconds: 50));
+            await Future.delayed(const Duration(milliseconds: 50));
             expect(counter++, 2);
           });
           expect(counter++, 3);
