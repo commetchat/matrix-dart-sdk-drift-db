@@ -3,6 +3,7 @@
 library matrix_dart_sdk_drift_db;
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:matrix/encryption/utils/olm_session.dart';
@@ -12,9 +13,7 @@ import 'package:matrix/encryption/utils/stored_inbound_group_session.dart';
 import 'package:matrix/matrix.dart';
 import 'package:matrix/src/utils/queued_to_device_event.dart';
 import 'package:matrix_dart_sdk_drift_db/database.dart';
-import 'package:matrix_dart_sdk_drift_db/schema/schema.dart';
 
-@DriftDatabase(tables: [ToDeviceQueue])
 class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   int get maxFileSize => 0;
@@ -106,15 +105,45 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<void> forgetRoom(String roomId) {
-    // TODO: implement forgetRoom
-    throw UnimplementedError();
+  Future<void> forgetRoom(String roomId) async {
+    await db.transaction(() async {
+      await (db.delete(db.eventData)..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+
+      await (db.delete(db.preloadRoomState)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+
+      await (db.delete(db.nonPreloadRoomState)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+
+      await (db.delete(db.roomMembers)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+
+      await (db.delete(db.roomAccountData)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+
+      await (db.delete(db.roomData)..where((tbl) => tbl.roomId.equals(roomId)))
+          .go();
+    });
   }
 
   @override
-  Future<Map<String, BasicEvent>> getAccountData() {
-    // TODO: implement getAccountData
-    throw UnimplementedError();
+  Future<Map<String, BasicEvent>> getAccountData() async {
+    final result = <String, BasicEvent>{};
+
+    await db.transaction(() async {
+      var data = await db.select(db.accountData).get();
+      for (var entry in data) {
+        result[entry.type] =
+            BasicEvent(type: entry.type, content: jsonDecode(entry.content));
+      }
+    });
+
+    return result;
   }
 
   @override
@@ -130,15 +159,46 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<Map<String, dynamic>?> getClient(String name) {
-    // TODO: implement getClient
-    throw UnimplementedError();
+  Future<Map<String, dynamic>?> getClient(String name) async {
+    Map<String, dynamic>? result;
+    var entry = await (db.select(db.clientData)
+          ..where((tbl) => tbl.id.equals(0)))
+        .getSingleOrNull();
+
+    if (entry == null) {
+      return null;
+    }
+
+    result = {};
+    result["homeserver_url"] = entry.homeserverUrl;
+    result["token"] = entry.token;
+    result["token_expires_at"] =
+        entry.tokenExpiresAt?.millisecondsSinceEpoch.toString();
+    result["refresh_token"] = entry.refreshToken;
+    result["user_id"] = entry.userId;
+    result["device_id"] = entry.deviceId;
+    result["device_name"] = entry.deviceName;
+    result["prev_batch"] = entry.prevBatch;
+    result["olm_account"] = entry.olmAccount;
+    result["sync_filter_id"] = entry.syncFilterId;
+    result.removeWhere((key, value) => value == null);
+
+    return result;
   }
 
   @override
-  Future<Event?> getEventById(String eventId, Room room) {
-    // TODO: implement getEventById
-    throw UnimplementedError();
+  Future<Event?> getEventById(String eventId, Room room) async {
+    var data = await (db.select(db.eventData)
+          ..where(
+              (tbl) => tbl.roomId.equals(room.id) & tbl.eventId.equals(eventId))
+          ..limit(1))
+        .getSingleOrNull();
+
+    if (data == null) {
+      return null;
+    }
+
+    return Event.fromJson(jsonDecode(data.content), room);
   }
 
   @override
@@ -150,9 +210,51 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<List<Event>> getEventList(Room room,
-      {int start = 0, bool onlySending = false, int? limit}) {
-    // TODO: implement getEventList
-    throw UnimplementedError();
+      {int start = 0, bool onlySending = false, int? limit}) async {
+    var data = await db.transaction(() async {
+      var sending = await (db.select(db.timelineFragmentData)
+            ..where(
+                (tbl) => tbl.roomId.equals(room.id) & tbl.sending.equals(true)))
+          .getSingleOrNull();
+
+      var sent = await (db.select(db.timelineFragmentData)
+            ..where((tbl) =>
+                tbl.roomId.equals(room.id) & tbl.sending.equals(false)))
+          .getSingleOrNull();
+
+      if (sent == null) {
+        return <String>[];
+      }
+
+      var sentFragments = jsonDecode(sent.fragmentsList) as List<dynamic>;
+      var sendingFragments = sending == null
+          ? null
+          : jsonDecode(sending.fragmentsList) as List<dynamic>;
+
+      final end =
+          min(sentFragments.length, start + (limit ?? sentFragments.length));
+
+      final eventIds = [
+        if (sendingFragments != null) ...sendingFragments,
+        if (!onlySending && start < sentFragments.length)
+          ...sentFragments.getRange(start, end),
+      ];
+
+      return eventIds;
+    });
+
+    return _getEventsByIds(List<String>.from(data), room);
+  }
+
+  Future<List<Event>> _getEventsByIds(List<String> eventIds, Room room) async {
+    var data = await (db.select(db.eventData)
+          ..where(
+              (tbl) => tbl.roomId.equals(room.id) & tbl.eventId.isIn(eventIds)))
+        .get();
+
+    return data
+        .map((e) => Event.fromJson(jsonDecode(e.content), room))
+        .toList();
   }
 
   @override
@@ -207,9 +309,48 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<List<Room>> getRoomList(Client client) {
-    // TODO: implement getRoomList
-    throw UnimplementedError();
+  Future<List<Room>> getRoomList(Client client) async {
+    final rooms = <String, Room>{};
+
+    await db.transaction(() async {
+      var allRooms = await db.select(db.roomData).get();
+
+      for (var data in allRooms) {
+        var room = Room.fromJson(jsonDecode(data.content), client);
+        rooms[room.id] = room;
+      }
+
+      var preloadStates = await db.select(db.preloadRoomState).get();
+
+      for (var state in preloadStates) {
+        var room = rooms[state.roomId];
+        if (room == null) {
+          continue;
+        }
+
+        var content = jsonDecode(state.content) as Map<String, dynamic>;
+        for (var entry in content.values) {
+          var event = Event.fromJson(entry, room);
+          room.setState(event);
+        }
+      }
+
+      var accountDatas = await db.select(db.roomAccountData).get();
+
+      for (var accountData in accountDatas) {
+        var event = BasicRoomEvent.fromJson(jsonDecode(accountData.content));
+
+        var room = rooms[event.roomId];
+        if (room == null) {
+          print("Found account data for unknown room ${event.roomId}");
+          continue;
+        }
+
+        room.roomAccountData[event.type] = event;
+      }
+    });
+
+    return rooms.values.toList();
   }
 
   @override
@@ -221,8 +362,30 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   Future<Room?> getSingleRoom(Client client, String roomId,
       {bool loadImportantStates = true}) {
-    // TODO: implement getSingleRoom
-    throw UnimplementedError();
+    return db.transaction(() async {
+      var roomData = await (db.select(db.roomData)
+            ..where((tbl) => tbl.roomId.equals(roomId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (roomData == null) {
+        return null;
+      }
+
+      final room = Room.fromJson(jsonDecode(roomData.content), client);
+
+      if (loadImportantStates) {
+        var states = await (db.select(db.preloadRoomState)
+              ..where((tbl) => tbl.roomId.equals(roomId)))
+            .get();
+        for (var state in states) {
+          var content = jsonDecode(state.content)[''];
+          room.setState(Event.fromJson(content, room));
+        }
+      }
+
+      return room;
+    });
   }
 
   @override
@@ -245,9 +408,17 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<User?> getUser(String userId, Room room) {
-    // TODO: implement getUser
-    throw UnimplementedError();
+  Future<User?> getUser(String userId, Room room) async {
+    var data = await (db.select(db.roomMembers)
+          ..where(
+              (tbl) => tbl.roomId.equals(room.id) & tbl.userId.equals(userId)))
+        .getSingleOrNull();
+
+    if (data == null) {
+      return null;
+    }
+
+    return Event.fromJson(jsonDecode(data.content), room).asUser;
   }
 
   @override
@@ -257,9 +428,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<List<User>> getUsers(Room room) {
-    // TODO: implement getUsers
-    throw UnimplementedError();
+  Future<List<User>> getUsers(Room room) async {
+    var users = await (db.select(db.roomMembers)
+          ..where((tbl) => tbl.roomId.equals(room.id)))
+        .get();
+
+    return users
+        .map((e) => Event.fromJson(jsonDecode(e.content), room).asUser)
+        .toList();
   }
 
   @override
@@ -279,9 +455,20 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       String? deviceId,
       String? deviceName,
       String? prevBatch,
-      String? olmAccount) {
-    // TODO: implement insertClient
-    throw UnimplementedError();
+      String? olmAccount) async {
+    await db.into(db.clientData).insertOnConflictUpdate(
+        ClientDataCompanion.insert(
+            id: const Value(0),
+            name: name,
+            homeserverUrl: homeserverUrl,
+            token: token,
+            tokenExpiresAt: Value(tokenExpiresAt),
+            refreshToken: Value(refreshToken),
+            userId: userId,
+            deviceId: Value(deviceId),
+            deviceName: Value(deviceName),
+            prevBatch: Value(prevBatch),
+            olmAccount: Value(olmAccount)));
   }
 
   @override
@@ -313,8 +500,26 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future removeEvent(String eventId, String roomId) {
-    // TODO: implement removeEvent
-    throw UnimplementedError();
+    return db.transaction(() async {
+      await (db.delete(db.eventData)
+            ..where((tbl) =>
+                tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId)))
+          .go();
+
+      var frag = await (db.select(db.timelineFragmentData)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .getSingleOrNull();
+
+      if (frag == null) {
+        return;
+      }
+
+      var fragments = jsonDecode(frag.fragmentsList) as List<dynamic>;
+      fragments.remove(eventId);
+
+      await db.into(db.timelineFragmentData).insertOnConflictUpdate(
+          frag.copyWith(fragmentsList: jsonEncode(fragments)));
+    });
   }
 
   @override
@@ -363,9 +568,25 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future setRoomPrevBatch(String? prevBatch, String roomId, Client client) {
-    // TODO: implement setRoomPrevBatch
-    throw UnimplementedError();
+  Future setRoomPrevBatch(
+      String? prevBatch, String roomId, Client client) async {
+    await db.transaction(() async {
+      var existing = await (db.select(db.roomData)
+            ..where((tbl) => tbl.roomId.equals(roomId)))
+          .getSingleOrNull();
+
+      if (existing == null) {
+        return;
+      }
+
+      var room = Room.fromJson(jsonDecode(existing.content), client);
+      room.prev_batch = prevBatch;
+      var content = jsonEncode(room.toJson());
+
+      await db
+          .into(db.roomData)
+          .insertOnConflictUpdate(existing.copyWith(content: content));
+    });
   }
 
   @override
@@ -383,15 +604,240 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future storeAccountData(String type, String content) {
-    // TODO: implement storeAccountData
-    throw UnimplementedError();
+  Future storeAccountData(String type, String content) async {
+    return db.transaction(() async {
+      await db.into(db.accountData).insertOnConflictUpdate(
+          AccountDataCompanion.insert(type: type, content: content));
+    });
   }
 
   @override
-  Future<void> storeEventUpdate(EventUpdate eventUpdate, Client client) {
-    // TODO: implement storeEventUpdate
-    throw UnimplementedError();
+  Future<void> storeEventUpdate(EventUpdate eventUpdate, Client client) async {
+    if (eventUpdate.type == EventUpdateType.ephemeral) {
+      return;
+    }
+
+    final tmpRoom = client.getRoomById(eventUpdate.roomID) ??
+        Room(id: eventUpdate.roomID, client: client);
+
+    if (eventUpdate.content['type'] == EventTypes.Redaction) {
+      final eventId = eventUpdate.content.tryGet<String>('redacts');
+      final event =
+          eventId != null ? await getEventById(eventId, tmpRoom) : null;
+
+      if (event != null) {
+        event.setRedactionEvent(Event.fromJson(eventUpdate.content, tmpRoom));
+
+        await db.transaction(() async {
+          var data = EventDataCompanion.insert(
+              roomId: eventUpdate.roomID,
+              eventId: eventId!,
+              content: jsonEncode(event.toJson()));
+
+          await db.into(db.eventData).insertOnConflictUpdate(data);
+        });
+
+        if (tmpRoom.lastEvent?.eventId == event.eventId) {
+          await db.transaction(() async {
+            if (client.importantStateEvents.contains(event.type)) {
+              await db.into(db.preloadRoomState).insertOnConflictUpdate(
+                  PreloadRoomStateCompanion.insert(
+                      roomId: eventUpdate.roomID,
+                      type: event.type,
+                      content: jsonEncode({"": event.toJson()})));
+            } else {
+              await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
+                  NonPreloadRoomStateCompanion.insert(
+                      roomId: eventUpdate.roomID,
+                      type: event.type,
+                      content: jsonEncode({"": event.toJson()})));
+            }
+          });
+        }
+      }
+    }
+
+    if ([EventUpdateType.timeline, EventUpdateType.history]
+        .contains(eventUpdate.type)) {
+      final eventId = eventUpdate.content["event_id"];
+      final prevEvent = await (db.select(db.eventData)
+            ..where((tbl) =>
+                tbl.roomId.equals(eventUpdate.roomID) &
+                tbl.eventId.equals(eventId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      EventStatus? prevStatus;
+      if (prevEvent != null) {
+        var content = jsonDecode(prevEvent.content) as Map<String, dynamic>;
+        final statusInt = content.tryGet<int>('status') ??
+            content
+                .tryGetMap<String, dynamic>('unsigned')
+                ?.tryGet<int>(messageSendingStatusKey);
+
+        prevStatus = statusInt == null ? null : eventStatusFromInt(statusInt);
+      }
+
+      final newStatus = eventStatusFromInt(
+        eventUpdate.content.tryGet<int>('status') ??
+            eventUpdate.content
+                .tryGetMap<String, dynamic>('unsigned')
+                ?.tryGet<int>(messageSendingStatusKey) ??
+            EventStatus.synced.intValue,
+      );
+
+      if (!newStatus.isSynced && prevStatus != null && prevStatus.isSynced) {
+        return;
+      }
+
+      final status = newStatus.isError || prevStatus == null
+          ? newStatus
+          : latestEventStatus(
+              prevStatus,
+              newStatus,
+            );
+
+      eventUpdate.content['unsigned'] ??= <String, dynamic>{};
+      eventUpdate.content['unsigned'][messageSendingStatusKey] =
+          eventUpdate.content['status'] = status.intValue;
+
+      eventUpdate.content['unsigned'] ??= <String, dynamic>{};
+      eventUpdate.content['unsigned'][messageSendingStatusKey] =
+          eventUpdate.content['status'] = status.intValue;
+
+      final transactionId = eventUpdate.content
+          .tryGetMap<String, dynamic>('unsigned')
+          ?.tryGet<String>('transaction_id');
+
+      await db.transaction(() async {
+        await db.into(db.eventData).insertOnConflictUpdate(
+            EventDataCompanion.insert(
+                roomId: eventUpdate.roomID,
+                eventId: eventId,
+                content: jsonEncode(eventUpdate.content)));
+      });
+
+      await db.transaction(() async {
+        var prevData = await (db.select(db.timelineFragmentData)
+              ..where((tbl) =>
+                  tbl.roomId.equals(eventUpdate.roomID) &
+                  tbl.sending.equals(!status.isSent))
+              ..limit(1))
+            .getSingleOrNull();
+
+        List<String> fragments = prevData != null
+            ? jsonDecode(prevData.fragmentsList)
+            : List<String>.empty(growable: true);
+
+        bool sending = !status.isSent;
+
+        if (fragments.contains(eventId) == false) {
+          if (eventUpdate.type == EventUpdateType.history) {
+            fragments.add(eventId);
+          } else {
+            fragments.insert(0, eventId);
+          }
+        } else if (status.isSynced &&
+            prevStatus != null &&
+            prevStatus.isSent &&
+            eventUpdate.type != EventUpdateType.history) {
+          fragments.remove(eventId);
+          fragments.insert(0, eventId);
+        }
+
+        await db.into(db.timelineFragmentData).insertOnConflictUpdate(
+            TimelineFragmentDataCompanion.insert(
+                roomId: eventUpdate.roomID,
+                sending: sending,
+                fragmentsList: jsonEncode(fragments)));
+      });
+
+      if (status.isSent) {
+        var sending = await (db.select(db.timelineFragmentData)
+              ..where((tbl) =>
+                  tbl.roomId.equals(eventUpdate.roomID) &
+                  tbl.sending.equals(true)))
+            .getSingleOrNull();
+
+        if (sending != null) {
+          var ids = jsonDecode(sending.fragmentsList) as List<String>;
+          var index = ids.indexOf(eventId);
+          if (index != -1) {
+            ids.removeAt(index);
+            await db.into(db.timelineFragmentData).insertOnConflictUpdate(
+                TimelineFragmentDataCompanion.insert(
+                    roomId: eventUpdate.roomID,
+                    sending: true,
+                    fragmentsList: jsonEncode(ids)));
+          }
+        }
+      }
+
+      if (!status.isError && !status.isSending && transactionId != null) {
+        await removeEvent(transactionId, eventUpdate.roomID);
+      }
+    }
+
+    final stateKey = eventUpdate.content['state_key'];
+    // Store a common state event
+    if (stateKey != null) {
+      if (eventUpdate.content['type'] == EventTypes.RoomMember) {
+        await db.transaction(() async {
+          await db.into(db.roomMembers).insertOnConflictUpdate(
+              RoomMembersCompanion.insert(
+                  roomId: eventUpdate.roomID,
+                  userId: eventUpdate.content['state_key'],
+                  content: jsonEncode(eventUpdate.content)));
+        });
+      } else {
+        final type = eventUpdate.content['type'] as String;
+
+        await db.transaction(() async {
+          if (client.importantStateEvents.contains(type)) {
+            var prev = await (db.select(db.preloadRoomState)
+                  ..where((tbl) =>
+                      tbl.roomId.equals(eventUpdate.roomID) &
+                      tbl.type.equals(type))
+                  ..limit(1))
+                .getSingleOrNull();
+
+            var content = prev != null ? jsonDecode(prev.content) : {};
+            content[stateKey] = eventUpdate.content;
+
+            await db.into(db.preloadRoomState).insertOnConflictUpdate(
+                PreloadRoomStateCompanion.insert(
+                    roomId: eventUpdate.roomID,
+                    type: type,
+                    content: jsonEncode(content)));
+          } else {
+            var prev = await (db.select(db.nonPreloadRoomState)
+                  ..where((tbl) =>
+                      tbl.roomId.equals(eventUpdate.roomID) &
+                      tbl.type.equals(type))
+                  ..limit(1))
+                .getSingleOrNull();
+
+            var content = prev != null ? jsonDecode(prev.content) : {};
+            content[stateKey] = eventUpdate.content;
+            await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
+                NonPreloadRoomStateCompanion.insert(
+                    roomId: eventUpdate.roomID,
+                    type: type,
+                    content: jsonEncode(content)));
+          }
+        });
+      }
+
+      if (eventUpdate.type == EventUpdateType.accountData) {
+        await db.transaction(() async {
+          await db.into(db.roomAccountData).insertOnConflictUpdate(
+              RoomAccountDataCompanion.insert(
+                  roomId: eventUpdate.roomID,
+                  type: eventUpdate.content['type'],
+                  content: jsonEncode(eventUpdate.content)));
+        });
+      }
+    }
   }
 
   @override
@@ -441,9 +887,75 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<void> storeRoomUpdate(String roomId, SyncRoomUpdate roomUpdate,
-      Event? lastEvent, Client client) {
-    // TODO: implement storeRoomUpdate
-    throw UnimplementedError();
+      Event? lastEvent, Client client) async {
+    // Leave room if membership is leave
+    if (roomUpdate is LeftRoomUpdate) {
+      await forgetRoom(roomId);
+      return;
+    }
+    final membership = roomUpdate is LeftRoomUpdate
+        ? Membership.leave
+        : roomUpdate is InvitedRoomUpdate
+            ? Membership.invite
+            : Membership.join;
+
+    await db.transaction(() async {
+      var existing = await (db.select(db.roomData)
+            ..where((tbl) => tbl.roomId.equals(roomId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (existing == null) {
+        var content = roomUpdate is JoinedRoomUpdate
+            ? Room(
+                client: client,
+                id: roomId,
+                membership: membership,
+                highlightCount:
+                    roomUpdate.unreadNotifications?.highlightCount?.toInt() ??
+                        0,
+                notificationCount: roomUpdate
+                        .unreadNotifications?.notificationCount
+                        ?.toInt() ??
+                    0,
+                prev_batch: roomUpdate.timeline?.prevBatch,
+                summary: roomUpdate.summary,
+                lastEvent: lastEvent,
+              ).toJson()
+            : Room(
+                client: client,
+                id: roomId,
+                membership: membership,
+                lastEvent: lastEvent,
+              ).toJson();
+
+        var data = RoomDataCompanion.insert(
+            roomId: roomId, content: jsonEncode(content));
+        await db.into(db.roomData).insertOnConflictUpdate(data);
+      } else if (roomUpdate is JoinedRoomUpdate) {
+        var current = existing.toCompanion(true);
+        final currentRoom =
+            Room.fromJson(jsonDecode(current.content.value), client);
+        var content = Room(
+          client: client,
+          id: roomId,
+          membership: membership,
+          highlightCount:
+              roomUpdate.unreadNotifications?.highlightCount?.toInt() ??
+                  currentRoom.highlightCount,
+          notificationCount:
+              roomUpdate.unreadNotifications?.notificationCount?.toInt() ??
+                  currentRoom.notificationCount,
+          prev_batch: roomUpdate.timeline?.prevBatch ?? currentRoom.prev_batch,
+          summary: RoomSummary.fromJson(currentRoom.summary.toJson()
+            ..addAll(roomUpdate.summary?.toJson() ?? {})),
+          lastEvent: lastEvent,
+        ).toJson();
+
+        await db.into(db.roomData).insertOnConflictUpdate(
+            current.copyWith(content: Value(jsonEncode(content))));
+      }
+    });
   }
 
   @override
@@ -454,9 +966,13 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future storeSyncFilterId(String syncFilterId) {
-    // TODO: implement storeSyncFilterId
-    throw UnimplementedError();
+  Future storeSyncFilterId(String syncFilterId) async {
+    var existing = await (db.select(db.clientData)
+          ..where((tbl) => tbl.id.equals(0)))
+        .getSingle();
+
+    var data = existing.copyWith(syncFilterId: Value(syncFilterId));
+    await db.into(db.clientData).insertOnConflictUpdate(data);
   }
 
   @override
@@ -494,15 +1010,38 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       String? deviceId,
       String? deviceName,
       String? prevBatch,
-      String? olmAccount) {
-    // TODO: implement updateClient
-    throw UnimplementedError();
+      String? olmAccount) async {
+    var existing = await (db.select(db.clientData)
+          ..where((tbl) => tbl.id.equals(0)))
+        .getSingleOrNull();
+
+    if (existing == null) {
+      return;
+    }
+
+    await db.into(db.clientData).insertOnConflictUpdate(
+        ClientDataCompanion.insert(
+            id: const Value(0),
+            name: existing.name,
+            homeserverUrl: homeserverUrl,
+            token: token,
+            tokenExpiresAt: Value(tokenExpiresAt),
+            refreshToken: Value(refreshToken),
+            userId: userId,
+            deviceId: Value(deviceId),
+            deviceName: Value(deviceName),
+            prevBatch: Value(prevBatch),
+            olmAccount: Value(olmAccount)));
   }
 
   @override
-  Future updateClientKeys(String olmAccount) {
-    // TODO: implement updateClientKeys
-    throw UnimplementedError();
+  Future updateClientKeys(String olmAccount) async {
+    var existing = await (db.select(db.clientData)
+          ..where((tbl) => tbl.id.equals(0)))
+        .getSingle();
+
+    var data = existing.copyWith(olmAccount: Value(olmAccount));
+    await db.into(db.clientData).insertOnConflictUpdate(data);
   }
 
   @override
