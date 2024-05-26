@@ -20,10 +20,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:drift/native.dart';
+import 'package:file/local.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 import 'package:test/test.dart';
 
 import 'package:matrix/matrix.dart';
-import 'fake_database.dart';
+
+import 'package:path_provider_linux/path_provider_linux.dart';
 
 String createLargeString(String character, int desiredSize) {
   final buffer = StringBuffer();
@@ -35,7 +40,14 @@ String createLargeString(String character, int desiredSize) {
   return buffer.toString();
 }
 
+Future<MatrixSdkDriftDatabase> getDatabase(Client? c) async {
+  return MatrixSdkDriftDatabase.init(NativeDatabase.memory());
+}
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  PathProviderLinux.registerWith();
+
   final databaseBuilders = {
     'Drift Database': getDatabase,
   };

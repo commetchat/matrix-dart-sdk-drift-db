@@ -1,6 +1,8 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, depend_on_referenced_packages, implementation_imports
 
 library matrix_dart_sdk_drift_db;
+
+import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:matrix/encryption/utils/olm_session.dart';
@@ -8,13 +10,11 @@ import 'package:matrix/encryption/utils/outbound_group_session.dart';
 import 'package:matrix/encryption/utils/ssss_cache.dart';
 import 'package:matrix/encryption/utils/stored_inbound_group_session.dart';
 import 'package:matrix/matrix.dart';
-
-// ignore: implementation_imports
 import 'package:matrix/src/utils/queued_to_device_event.dart';
 import 'package:matrix_dart_sdk_drift_db/database.dart';
 import 'package:matrix_dart_sdk_drift_db/schema/schema.dart';
 
-@DriftDatabase(tables: [TodoItems, TodoCategory])
+@DriftDatabase(tables: [ToDeviceQueue])
 class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   int get maxFileSize => 0;
@@ -22,12 +22,12 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   @override
   bool get supportsFileStoring => false;
 
-  MatrixSdkDriftDBImplementation database;
+  MatrixSdkDriftDBImplementation db;
 
-  MatrixSdkDriftDatabase(this.database);
+  MatrixSdkDriftDatabase._(this.db);
 
-  static Future<MatrixSdkDriftDatabase> init(String path, String s) {
-    throw UnimplementedError();
+  static Future<MatrixSdkDriftDatabase> init(QueryExecutor executor) async {
+    return MatrixSdkDriftDatabase._(MatrixSdkDriftDBImplementation(executor));
   }
 
   @override
@@ -74,15 +74,17 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future deleteFromToDeviceQueue(int id) {
-    // TODO: implement deleteFromToDeviceQueue
-    throw UnimplementedError();
+  Future deleteFromToDeviceQueue(int id) async {
+    return db.transaction(
+      () async {
+        await (db.delete(db.toDeviceQueue)..where((t) => t.id.equals(id))).go();
+      },
+    );
   }
 
   @override
-  Future deleteOldFiles(int savedAt) {
-    // TODO: implement deleteOldFiles
-    throw UnimplementedError();
+  Future deleteOldFiles(int savedAt) async {
+    return null;
   }
 
   @override
@@ -154,9 +156,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<Uint8List?> getFile(Uri mxcUri) {
-    // TODO: implement getFile
-    throw UnimplementedError();
+  Future<Uint8List?> getFile(Uri mxcUri) async {
+    return null;
   }
 
   @override
@@ -225,9 +226,15 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<List<QueuedToDeviceEvent>> getToDeviceEventQueue() {
-    // TODO: implement getToDeviceEventQueue
-    throw UnimplementedError();
+  Future<List<QueuedToDeviceEvent>> getToDeviceEventQueue() async {
+    var data = await db.transaction(() => db.select(db.toDeviceQueue).get());
+    return data
+        .map((e) => QueuedToDeviceEvent(
+            id: e.id,
+            type: e.type,
+            txnId: e.txnId,
+            content: jsonDecode(e.content)))
+        .toList();
   }
 
   @override
@@ -279,8 +286,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future insertIntoToDeviceQueue(String type, String txnId, String content) {
-    // TODO: implement insertIntoToDeviceQueue
-    throw UnimplementedError();
+    return db.transaction(() async {
+      return await db.into(db.toDeviceQueue).insert(
+          ToDeviceQueueCompanion.insert(
+              type: type, txnId: txnId, content: content));
+    });
   }
 
   @override
@@ -385,9 +395,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future storeFile(Uri mxcUri, Uint8List bytes, int time) {
-    // TODO: implement storeFile
-    throw UnimplementedError();
+  Future storeFile(Uri mxcUri, Uint8List bytes, int time) async {
+    return null;
   }
 
   @override
@@ -472,8 +481,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<void> transaction(Future<void> Function() action) {
-    // TODO: implement transaction
-    throw UnimplementedError();
+    return db.transaction(action);
   }
 
   @override
