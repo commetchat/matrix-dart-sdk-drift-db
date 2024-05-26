@@ -999,7 +999,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               ..limit(1))
             .getSingleOrNull();
 
-        List<String> fragments = prevData != null
+        List fragments = prevData != null
             ? jsonDecode(prevData.fragmentsList)
             : List<String>.empty(growable: true);
 
