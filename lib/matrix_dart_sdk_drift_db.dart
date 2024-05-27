@@ -1034,7 +1034,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
             .getSingleOrNull();
 
         if (sending != null) {
-          var ids = jsonDecode(sending.fragmentsList) as List<String>;
+          var ids = jsonDecode(sending.fragmentsList) as List;
           var index = ids.indexOf(eventId);
           if (index != -1) {
             ids.removeAt(index);
