@@ -714,19 +714,17 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId)))
           .go();
 
-      var frag = await (db.select(db.timelineFragmentData)
+      var frags = await (db.select(db.timelineFragmentData)
             ..where((tbl) => tbl.roomId.equals(roomId)))
-          .getSingleOrNull();
+          .get();
 
-      if (frag == null) {
-        return;
+      for (var frag in frags) {
+        var fragments = jsonDecode(frag.fragmentsList) as List<dynamic>;
+        fragments.remove(eventId);
+
+        await db.into(db.timelineFragmentData).insertOnConflictUpdate(
+            frag.copyWith(fragmentsList: jsonEncode(fragments)));
       }
-
-      var fragments = jsonDecode(frag.fragmentsList) as List<dynamic>;
-      fragments.remove(eventId);
-
-      await db.into(db.timelineFragmentData).insertOnConflictUpdate(
-          frag.copyWith(fragmentsList: jsonEncode(fragments)));
     });
   }
 
