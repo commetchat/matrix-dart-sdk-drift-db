@@ -314,7 +314,12 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               (tbl) => tbl.roomId.equals(room.id) & tbl.eventId.isIn(eventIds)))
         .get();
 
-    return data
+    var sorted = List<EventDataData>.empty(growable: true);
+    for (var i = 0; i < eventIds.length; i++) {
+      sorted.insert(i, data.firstWhere((e) => e.eventId == eventIds[i]));
+    }
+
+    return sorted
         .map((e) => Event.fromJson(jsonDecode(e.content), room))
         .toList();
   }
