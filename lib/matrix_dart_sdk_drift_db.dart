@@ -1104,16 +1104,16 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           }
         });
       }
+    }
 
-      if (eventUpdate.type == EventUpdateType.accountData) {
-        await db.transaction(() async {
-          await db.into(db.roomAccountData).insertOnConflictUpdate(
-              RoomAccountDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
-                  type: eventUpdate.content['type'],
-                  content: jsonEncode(eventUpdate.content)));
-        });
-      }
+    if (eventUpdate.type == EventUpdateType.accountData) {
+      await db.transaction(() async {
+        await db.into(db.roomAccountData).insertOnConflictUpdate(
+            RoomAccountDataCompanion.insert(
+                roomId: eventUpdate.roomID,
+                type: eventUpdate.content['type'],
+                content: jsonEncode(eventUpdate.content)));
+      });
     }
   }
 
