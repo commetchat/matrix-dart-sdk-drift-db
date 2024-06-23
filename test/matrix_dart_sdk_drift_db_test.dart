@@ -38,7 +38,7 @@ String createLargeString(String character, int desiredSize) {
 }
 
 Future<MatrixSdkDriftDatabase> getDatabase(Client? c) async {
-  return MatrixSdkDriftDatabase.init(NativeDatabase.memory());
+  return MatrixSdkDriftDatabase.init(NativeDatabase.memory(), "");
 }
 
 void main() {
