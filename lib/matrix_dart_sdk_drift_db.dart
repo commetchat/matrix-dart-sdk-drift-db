@@ -1567,4 +1567,43 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       });
     });
   }
+
+  @override
+  Future<CachedProfileInformation?> getUserProfile(String userId) {
+    return runBenchmarked("Get user profile", () async {
+      var data = await (db.select(db.cachedProfileData)
+            ..where((tbl) => tbl.userId.equals(userId))
+            ..limit(1))
+          .getSingleOrNull();
+
+      if (data == null) {
+        return null;
+      }
+
+      return CachedProfileInformation.fromJson(jsonDecode(data.content));
+    });
+  }
+
+  @override
+  Future<void> markUserProfileAsOutdated(String userId) async {
+    return runBenchmarked("Mark user profile as outdated", () async {
+      final profile = await getUserProfile(userId);
+      if (profile == null) return;
+
+      await storeUserProfile(
+          userId,
+          CachedProfileInformation.fromProfile(profile,
+              outdated: true, updated: profile.updated));
+    });
+  }
+
+  @override
+  Future<void> storeUserProfile(
+      String userId, CachedProfileInformation profile) {
+    return runBenchmarked("Store user profile", () {
+      return db.into(db.cachedProfileData).insertOnConflictUpdate(
+          CachedProfileDataCompanion.insert(
+              userId: userId, content: jsonEncode(profile.toJson())));
+    });
+  }
 }

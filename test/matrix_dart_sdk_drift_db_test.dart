@@ -38,7 +38,7 @@ String createLargeString(String character, int desiredSize) {
 }
 
 Future<MatrixSdkDriftDatabase> getDatabase(Client? c) async {
-  return MatrixSdkDriftDatabase.init(NativeDatabase.memory(), "");
+  return MatrixSdkDriftDatabase.init(NativeDatabase.memory(), "Test Database");
 }
 
 void main() {
@@ -503,6 +503,32 @@ void main() {
           storedPresence?.toJson(),
         );
       });
+      test(
+        'storeUserProfile',
+        () async {
+          final profile1 = await database.getUserProfile('@alice:example.com');
+          expect(profile1, null);
+
+          await database.storeUserProfile(
+            '@alice:example.com',
+            CachedProfileInformation.fromProfile(
+              ProfileInformation(
+                  avatarUrl: Uri.parse('mxc://test'), displayname: 'Alice M'),
+              outdated: false,
+              updated: DateTime.now(),
+            ),
+          );
+
+          final profile2 = await database.getUserProfile('@alice:example.com');
+          expect(profile2?.displayname, 'Alice M');
+          expect(profile2?.outdated, false);
+          await database.markUserProfileAsOutdated('@alice:example.com');
+
+          final profile3 = await database.getUserProfile('@alice:example.com');
+          expect(profile3?.displayname, 'Alice M');
+          expect(profile3?.outdated, true);
+        },
+      );
 
       // Clearing up from here
       test('clearSSSSCache', () async {
@@ -517,19 +543,6 @@ void main() {
       test('Close', () async {
         await database.close();
       });
-      // test('Delete', () async {
-      //   final database = await getMatrixSdkDatabase(null);
-      //   await database.storeAccountData(
-      //     'm.test.data',
-      //     jsonEncode({'foo': 'bar'}),
-      //   );
-      //   await database.delete();
-
-      //   // Check if previously stored data is gone:
-      //   final reopenedDatabase = await getMatrixSdkDatabase(null);
-      //   final dump = await reopenedDatabase.getAccountData();
-      //   expect(dump.isEmpty, true);
-      // });
     });
   }
 }

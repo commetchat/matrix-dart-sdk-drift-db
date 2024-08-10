@@ -5309,6 +5309,194 @@ class PresenceDataCompanion extends UpdateCompanion<PresenceDataData> {
   }
 }
 
+class $CachedProfileDataTable extends CachedProfileData
+    with TableInfo<$CachedProfileDataTable, CachedProfileDataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedProfileDataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [userId, content];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_profile_data';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<CachedProfileDataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  CachedProfileDataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedProfileDataData(
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+    );
+  }
+
+  @override
+  $CachedProfileDataTable createAlias(String alias) {
+    return $CachedProfileDataTable(attachedDatabase, alias);
+  }
+}
+
+class CachedProfileDataData extends DataClass
+    implements Insertable<CachedProfileDataData> {
+  final String userId;
+  final String content;
+  const CachedProfileDataData({required this.userId, required this.content});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['content'] = Variable<String>(content);
+    return map;
+  }
+
+  CachedProfileDataCompanion toCompanion(bool nullToAbsent) {
+    return CachedProfileDataCompanion(
+      userId: Value(userId),
+      content: Value(content),
+    );
+  }
+
+  factory CachedProfileDataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedProfileDataData(
+      userId: serializer.fromJson<String>(json['userId']),
+      content: serializer.fromJson<String>(json['content']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'content': serializer.toJson<String>(content),
+    };
+  }
+
+  CachedProfileDataData copyWith({String? userId, String? content}) =>
+      CachedProfileDataData(
+        userId: userId ?? this.userId,
+        content: content ?? this.content,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CachedProfileDataData(')
+          ..write('userId: $userId, ')
+          ..write('content: $content')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(userId, content);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedProfileDataData &&
+          other.userId == this.userId &&
+          other.content == this.content);
+}
+
+class CachedProfileDataCompanion
+    extends UpdateCompanion<CachedProfileDataData> {
+  final Value<String> userId;
+  final Value<String> content;
+  final Value<int> rowid;
+  const CachedProfileDataCompanion({
+    this.userId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedProfileDataCompanion.insert({
+    required String userId,
+    required String content,
+    this.rowid = const Value.absent(),
+  })  : userId = Value(userId),
+        content = Value(content);
+  static Insertable<CachedProfileDataData> custom({
+    Expression<String>? userId,
+    Expression<String>? content,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (content != null) 'content': content,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedProfileDataCompanion copyWith(
+      {Value<String>? userId, Value<String>? content, Value<int>? rowid}) {
+    return CachedProfileDataCompanion(
+      userId: userId ?? this.userId,
+      content: content ?? this.content,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedProfileDataCompanion(')
+          ..write('userId: $userId, ')
+          ..write('content: $content, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
   _$MatrixSdkDriftDBImplementation(QueryExecutor e) : super(e);
   _$MatrixSdkDriftDBImplementationManager get managers =>
@@ -5341,6 +5529,8 @@ abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
   late final $UserCrossSigningKeyTable userCrossSigningKey =
       $UserCrossSigningKeyTable(this);
   late final $PresenceDataTable presenceData = $PresenceDataTable(this);
+  late final $CachedProfileDataTable cachedProfileData =
+      $CachedProfileDataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5365,7 +5555,8 @@ abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
         userDeviceKey,
         userDeviceKeyInfo,
         userCrossSigningKey,
-        presenceData
+        presenceData,
+        cachedProfileData
       ];
   @override
   DriftDatabaseOptions get options =>
@@ -7921,6 +8112,103 @@ class $$PresenceDataTableOrderingComposer extends OrderingComposer<
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+typedef $$CachedProfileDataTableInsertCompanionBuilder
+    = CachedProfileDataCompanion Function({
+  required String userId,
+  required String content,
+  Value<int> rowid,
+});
+typedef $$CachedProfileDataTableUpdateCompanionBuilder
+    = CachedProfileDataCompanion Function({
+  Value<String> userId,
+  Value<String> content,
+  Value<int> rowid,
+});
+
+class $$CachedProfileDataTableTableManager extends RootTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $CachedProfileDataTable,
+    CachedProfileDataData,
+    $$CachedProfileDataTableFilterComposer,
+    $$CachedProfileDataTableOrderingComposer,
+    $$CachedProfileDataTableProcessedTableManager,
+    $$CachedProfileDataTableInsertCompanionBuilder,
+    $$CachedProfileDataTableUpdateCompanionBuilder> {
+  $$CachedProfileDataTableTableManager(
+      _$MatrixSdkDriftDBImplementation db, $CachedProfileDataTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$CachedProfileDataTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$CachedProfileDataTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$CachedProfileDataTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> userId = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CachedProfileDataCompanion(
+            userId: userId,
+            content: content,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            required String userId,
+            required String content,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CachedProfileDataCompanion.insert(
+            userId: userId,
+            content: content,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$CachedProfileDataTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$MatrixSdkDriftDBImplementation,
+        $CachedProfileDataTable,
+        CachedProfileDataData,
+        $$CachedProfileDataTableFilterComposer,
+        $$CachedProfileDataTableOrderingComposer,
+        $$CachedProfileDataTableProcessedTableManager,
+        $$CachedProfileDataTableInsertCompanionBuilder,
+        $$CachedProfileDataTableUpdateCompanionBuilder> {
+  $$CachedProfileDataTableProcessedTableManager(super.$state);
+}
+
+class $$CachedProfileDataTableFilterComposer extends FilterComposer<
+    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
+  $$CachedProfileDataTableFilterComposer(super.$state);
+  ColumnFilters<String> get userId => $state.composableBuilder(
+      column: $state.table.userId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get content => $state.composableBuilder(
+      column: $state.table.content,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$CachedProfileDataTableOrderingComposer extends OrderingComposer<
+    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
+  $$CachedProfileDataTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get userId => $state.composableBuilder(
+      column: $state.table.userId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get content => $state.composableBuilder(
+      column: $state.table.content,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 class _$MatrixSdkDriftDBImplementationManager {
   final _$MatrixSdkDriftDBImplementation _db;
   _$MatrixSdkDriftDBImplementationManager(this._db);
@@ -7965,4 +8253,6 @@ class _$MatrixSdkDriftDBImplementationManager {
       $$UserCrossSigningKeyTableTableManager(_db, _db.userCrossSigningKey);
   $$PresenceDataTableTableManager get presenceData =>
       $$PresenceDataTableTableManager(_db, _db.presenceData);
+  $$CachedProfileDataTableTableManager get cachedProfileData =>
+      $$CachedProfileDataTableTableManager(_db, _db.cachedProfileData);
 }
