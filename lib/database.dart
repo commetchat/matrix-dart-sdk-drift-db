@@ -24,10 +24,11 @@ part 'database.g.dart';
   UserDeviceKeyInfo,
   UserCrossSigningKey,
   PresenceData,
+  CachedProfileData,
 ])
 class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
   MatrixSdkDriftDBImplementation(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 }

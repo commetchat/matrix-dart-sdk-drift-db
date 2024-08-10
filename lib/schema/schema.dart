@@ -196,3 +196,11 @@ class PresenceData extends Table {
   @override
   Set<Column> get primaryKey => {userId};
 }
+
+class CachedProfileData extends Table {
+  TextColumn get userId => text()();
+  TextColumn get content => text()();
+
+  @override
+  Set<Column> get primaryKey => {userId};
+}
