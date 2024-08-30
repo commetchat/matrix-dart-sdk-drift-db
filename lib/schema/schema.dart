@@ -13,6 +13,7 @@ class ClientData extends Table {
   TextColumn get prevBatch => text().nullable()();
   TextColumn get olmAccount => text().nullable()();
   TextColumn get syncFilterId => text().nullable()();
+  TextColumn get wellKnown => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

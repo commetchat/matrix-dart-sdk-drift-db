@@ -1606,4 +1606,33 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               userId: userId, content: jsonEncode(profile.toJson())));
     });
   }
+
+  @override
+  Future<DiscoveryInformation?> getWellKnown() {
+    return runBenchmarked("Get well known", () async {
+      var data = await (db.select(db.clientData)).getSingleOrNull();
+
+      if (data?.wellKnown != null) {
+        return DiscoveryInformation.fromJson(jsonDecode(data!.wellKnown!));
+      }
+      return null;
+    });
+  }
+
+  @override
+  Future<void> storeWellKnown(DiscoveryInformation? discoveryInformation) {
+    return runBenchmarked("Store well known", () async {
+      var data = await (db.select(db.clientData)).getSingleOrNull();
+
+      if (data == null || discoveryInformation == null) {
+        return;
+      }
+
+      final info = jsonEncode(discoveryInformation.toJson());
+
+      await (db
+          .into(db.clientData)
+          .insertOnConflictUpdate(data.copyWith(wellKnown: Value(info))));
+    });
+  }
 }

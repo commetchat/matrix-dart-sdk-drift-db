@@ -77,6 +77,12 @@ class $ClientDataTable extends ClientData
   late final GeneratedColumn<String> syncFilterId = GeneratedColumn<String>(
       'sync_filter_id', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _wellKnownMeta =
+      const VerificationMeta('wellKnown');
+  @override
+  late final GeneratedColumn<String> wellKnown = GeneratedColumn<String>(
+      'well_known', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -90,7 +96,8 @@ class $ClientDataTable extends ClientData
         deviceName,
         prevBatch,
         olmAccount,
-        syncFilterId
+        syncFilterId,
+        wellKnown
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -169,6 +176,10 @@ class $ClientDataTable extends ClientData
           syncFilterId.isAcceptableOrUnknown(
               data['sync_filter_id']!, _syncFilterIdMeta));
     }
+    if (data.containsKey('well_known')) {
+      context.handle(_wellKnownMeta,
+          wellKnown.isAcceptableOrUnknown(data['well_known']!, _wellKnownMeta));
+    }
     return context;
   }
 
@@ -202,6 +213,8 @@ class $ClientDataTable extends ClientData
           .read(DriftSqlType.string, data['${effectivePrefix}olm_account']),
       syncFilterId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}sync_filter_id']),
+      wellKnown: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}well_known']),
     );
   }
 
@@ -224,6 +237,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
   final String? prevBatch;
   final String? olmAccount;
   final String? syncFilterId;
+  final String? wellKnown;
   const ClientDataData(
       {required this.id,
       required this.name,
@@ -236,7 +250,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       this.deviceName,
       this.prevBatch,
       this.olmAccount,
-      this.syncFilterId});
+      this.syncFilterId,
+      this.wellKnown});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -265,6 +280,9 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
     }
     if (!nullToAbsent || syncFilterId != null) {
       map['sync_filter_id'] = Variable<String>(syncFilterId);
+    }
+    if (!nullToAbsent || wellKnown != null) {
+      map['well_known'] = Variable<String>(wellKnown);
     }
     return map;
   }
@@ -297,6 +315,9 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       syncFilterId: syncFilterId == null && nullToAbsent
           ? const Value.absent()
           : Value(syncFilterId),
+      wellKnown: wellKnown == null && nullToAbsent
+          ? const Value.absent()
+          : Value(wellKnown),
     );
   }
 
@@ -316,6 +337,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       prevBatch: serializer.fromJson<String?>(json['prevBatch']),
       olmAccount: serializer.fromJson<String?>(json['olmAccount']),
       syncFilterId: serializer.fromJson<String?>(json['syncFilterId']),
+      wellKnown: serializer.fromJson<String?>(json['wellKnown']),
     );
   }
   @override
@@ -334,6 +356,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       'prevBatch': serializer.toJson<String?>(prevBatch),
       'olmAccount': serializer.toJson<String?>(olmAccount),
       'syncFilterId': serializer.toJson<String?>(syncFilterId),
+      'wellKnown': serializer.toJson<String?>(wellKnown),
     };
   }
 
@@ -349,7 +372,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           Value<String?> deviceName = const Value.absent(),
           Value<String?> prevBatch = const Value.absent(),
           Value<String?> olmAccount = const Value.absent(),
-          Value<String?> syncFilterId = const Value.absent()}) =>
+          Value<String?> syncFilterId = const Value.absent(),
+          Value<String?> wellKnown = const Value.absent()}) =>
       ClientDataData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -366,6 +390,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
         olmAccount: olmAccount.present ? olmAccount.value : this.olmAccount,
         syncFilterId:
             syncFilterId.present ? syncFilterId.value : this.syncFilterId,
+        wellKnown: wellKnown.present ? wellKnown.value : this.wellKnown,
       );
   @override
   String toString() {
@@ -381,7 +406,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           ..write('deviceName: $deviceName, ')
           ..write('prevBatch: $prevBatch, ')
           ..write('olmAccount: $olmAccount, ')
-          ..write('syncFilterId: $syncFilterId')
+          ..write('syncFilterId: $syncFilterId, ')
+          ..write('wellKnown: $wellKnown')
           ..write(')'))
         .toString();
   }
@@ -399,7 +425,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       deviceName,
       prevBatch,
       olmAccount,
-      syncFilterId);
+      syncFilterId,
+      wellKnown);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -415,7 +442,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           other.deviceName == this.deviceName &&
           other.prevBatch == this.prevBatch &&
           other.olmAccount == this.olmAccount &&
-          other.syncFilterId == this.syncFilterId);
+          other.syncFilterId == this.syncFilterId &&
+          other.wellKnown == this.wellKnown);
 }
 
 class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
@@ -431,6 +459,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
   final Value<String?> prevBatch;
   final Value<String?> olmAccount;
   final Value<String?> syncFilterId;
+  final Value<String?> wellKnown;
   const ClientDataCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -444,6 +473,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     this.prevBatch = const Value.absent(),
     this.olmAccount = const Value.absent(),
     this.syncFilterId = const Value.absent(),
+    this.wellKnown = const Value.absent(),
   });
   ClientDataCompanion.insert({
     this.id = const Value.absent(),
@@ -458,6 +488,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     this.prevBatch = const Value.absent(),
     this.olmAccount = const Value.absent(),
     this.syncFilterId = const Value.absent(),
+    this.wellKnown = const Value.absent(),
   })  : name = Value(name),
         homeserverUrl = Value(homeserverUrl),
         token = Value(token),
@@ -475,6 +506,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     Expression<String>? prevBatch,
     Expression<String>? olmAccount,
     Expression<String>? syncFilterId,
+    Expression<String>? wellKnown,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -489,6 +521,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       if (prevBatch != null) 'prev_batch': prevBatch,
       if (olmAccount != null) 'olm_account': olmAccount,
       if (syncFilterId != null) 'sync_filter_id': syncFilterId,
+      if (wellKnown != null) 'well_known': wellKnown,
     });
   }
 
@@ -504,7 +537,8 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       Value<String?>? deviceName,
       Value<String?>? prevBatch,
       Value<String?>? olmAccount,
-      Value<String?>? syncFilterId}) {
+      Value<String?>? syncFilterId,
+      Value<String?>? wellKnown}) {
     return ClientDataCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -518,6 +552,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       prevBatch: prevBatch ?? this.prevBatch,
       olmAccount: olmAccount ?? this.olmAccount,
       syncFilterId: syncFilterId ?? this.syncFilterId,
+      wellKnown: wellKnown ?? this.wellKnown,
     );
   }
 
@@ -560,6 +595,9 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     if (syncFilterId.present) {
       map['sync_filter_id'] = Variable<String>(syncFilterId.value);
     }
+    if (wellKnown.present) {
+      map['well_known'] = Variable<String>(wellKnown.value);
+    }
     return map;
   }
 
@@ -577,7 +615,8 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
           ..write('deviceName: $deviceName, ')
           ..write('prevBatch: $prevBatch, ')
           ..write('olmAccount: $olmAccount, ')
-          ..write('syncFilterId: $syncFilterId')
+          ..write('syncFilterId: $syncFilterId, ')
+          ..write('wellKnown: $wellKnown')
           ..write(')'))
         .toString();
   }
@@ -5576,6 +5615,7 @@ typedef $$ClientDataTableInsertCompanionBuilder = ClientDataCompanion Function({
   Value<String?> prevBatch,
   Value<String?> olmAccount,
   Value<String?> syncFilterId,
+  Value<String?> wellKnown,
 });
 typedef $$ClientDataTableUpdateCompanionBuilder = ClientDataCompanion Function({
   Value<int> id,
@@ -5590,6 +5630,7 @@ typedef $$ClientDataTableUpdateCompanionBuilder = ClientDataCompanion Function({
   Value<String?> prevBatch,
   Value<String?> olmAccount,
   Value<String?> syncFilterId,
+  Value<String?> wellKnown,
 });
 
 class $$ClientDataTableTableManager extends RootTableManager<
@@ -5625,6 +5666,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             Value<String?> prevBatch = const Value.absent(),
             Value<String?> olmAccount = const Value.absent(),
             Value<String?> syncFilterId = const Value.absent(),
+            Value<String?> wellKnown = const Value.absent(),
           }) =>
               ClientDataCompanion(
             id: id,
@@ -5639,6 +5681,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             prevBatch: prevBatch,
             olmAccount: olmAccount,
             syncFilterId: syncFilterId,
+            wellKnown: wellKnown,
           ),
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
@@ -5653,6 +5696,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             Value<String?> prevBatch = const Value.absent(),
             Value<String?> olmAccount = const Value.absent(),
             Value<String?> syncFilterId = const Value.absent(),
+            Value<String?> wellKnown = const Value.absent(),
           }) =>
               ClientDataCompanion.insert(
             id: id,
@@ -5667,6 +5711,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             prevBatch: prevBatch,
             olmAccount: olmAccount,
             syncFilterId: syncFilterId,
+            wellKnown: wellKnown,
           ),
         ));
 }
@@ -5745,6 +5790,11 @@ class $$ClientDataTableFilterComposer
       column: $state.table.syncFilterId,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get wellKnown => $state.composableBuilder(
+      column: $state.table.wellKnown,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
 }
 
 class $$ClientDataTableOrderingComposer extends OrderingComposer<
@@ -5807,6 +5857,11 @@ class $$ClientDataTableOrderingComposer extends OrderingComposer<
 
   ColumnOrderings<String> get syncFilterId => $state.composableBuilder(
       column: $state.table.syncFilterId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get wellKnown => $state.composableBuilder(
+      column: $state.table.wellKnown,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
