@@ -30,7 +30,7 @@ class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
   MatrixSdkDriftDBImplementation(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -41,6 +41,10 @@ class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.createTable(cachedProfileData);
+        }
+
+        if (from < 3) {
+          await m.addColumn(clientData, clientData.wellKnown);
         }
       },
     );
