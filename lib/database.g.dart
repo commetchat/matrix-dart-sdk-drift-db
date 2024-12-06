@@ -392,6 +392,34 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
             syncFilterId.present ? syncFilterId.value : this.syncFilterId,
         wellKnown: wellKnown.present ? wellKnown.value : this.wellKnown,
       );
+  ClientDataData copyWithCompanion(ClientDataCompanion data) {
+    return ClientDataData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      homeserverUrl: data.homeserverUrl.present
+          ? data.homeserverUrl.value
+          : this.homeserverUrl,
+      token: data.token.present ? data.token.value : this.token,
+      tokenExpiresAt: data.tokenExpiresAt.present
+          ? data.tokenExpiresAt.value
+          : this.tokenExpiresAt,
+      refreshToken: data.refreshToken.present
+          ? data.refreshToken.value
+          : this.refreshToken,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      deviceName:
+          data.deviceName.present ? data.deviceName.value : this.deviceName,
+      prevBatch: data.prevBatch.present ? data.prevBatch.value : this.prevBatch,
+      olmAccount:
+          data.olmAccount.present ? data.olmAccount.value : this.olmAccount,
+      syncFilterId: data.syncFilterId.present
+          ? data.syncFilterId.value
+          : this.syncFilterId,
+      wellKnown: data.wellKnown.present ? data.wellKnown.value : this.wellKnown,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ClientDataData(')
@@ -771,6 +799,15 @@ class ToDeviceQueueData extends DataClass
         txnId: txnId ?? this.txnId,
         content: content ?? this.content,
       );
+  ToDeviceQueueData copyWithCompanion(ToDeviceQueueCompanion data) {
+    return ToDeviceQueueData(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      txnId: data.txnId.present ? data.txnId.value : this.txnId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ToDeviceQueueData(')
@@ -973,6 +1010,13 @@ class AccountDataData extends DataClass implements Insertable<AccountDataData> {
         type: type ?? this.type,
         content: content ?? this.content,
       );
+  AccountDataData copyWithCompanion(AccountDataCompanion data) {
+    return AccountDataData(
+      type: data.type.present ? data.type.value : this.type,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('AccountDataData(')
@@ -1157,6 +1201,13 @@ class RoomDataData extends DataClass implements Insertable<RoomDataData> {
         roomId: roomId ?? this.roomId,
         content: content ?? this.content,
       );
+  RoomDataData copyWithCompanion(RoomDataCompanion data) {
+    return RoomDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('RoomDataData(')
@@ -1365,6 +1416,14 @@ class PreloadRoomStateData extends DataClass
         type: type ?? this.type,
         content: content ?? this.content,
       );
+  PreloadRoomStateData copyWithCompanion(PreloadRoomStateCompanion data) {
+    return PreloadRoomStateData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      type: data.type.present ? data.type.value : this.type,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PreloadRoomStateData(')
@@ -1590,6 +1649,14 @@ class NonPreloadRoomStateData extends DataClass
         type: type ?? this.type,
         content: content ?? this.content,
       );
+  NonPreloadRoomStateData copyWithCompanion(NonPreloadRoomStateCompanion data) {
+    return NonPreloadRoomStateData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      type: data.type.present ? data.type.value : this.type,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NonPreloadRoomStateData(')
@@ -1815,6 +1882,14 @@ class RoomAccountDataData extends DataClass
         type: type ?? this.type,
         content: content ?? this.content,
       );
+  RoomAccountDataData copyWithCompanion(RoomAccountDataCompanion data) {
+    return RoomAccountDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      type: data.type.present ? data.type.value : this.type,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('RoomAccountDataData(')
@@ -2037,6 +2112,14 @@ class EventDataData extends DataClass implements Insertable<EventDataData> {
         eventId: eventId ?? this.eventId,
         content: content ?? this.content,
       );
+  EventDataData copyWithCompanion(EventDataCompanion data) {
+    return EventDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('EventDataData(')
@@ -2270,6 +2353,17 @@ class TimelineFragmentDataData extends DataClass
         sending: sending ?? this.sending,
         fragmentsList: fragmentsList ?? this.fragmentsList,
       );
+  TimelineFragmentDataData copyWithCompanion(
+      TimelineFragmentDataCompanion data) {
+    return TimelineFragmentDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      sending: data.sending.present ? data.sending.value : this.sending,
+      fragmentsList: data.fragmentsList.present
+          ? data.fragmentsList.value
+          : this.fragmentsList,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('TimelineFragmentDataData(')
@@ -2492,6 +2586,14 @@ class RoomMember extends DataClass implements Insertable<RoomMember> {
         userId: userId ?? this.userId,
         content: content ?? this.content,
       );
+  RoomMember copyWithCompanion(RoomMembersCompanion data) {
+    return RoomMember(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('RoomMember(')
@@ -2870,6 +2972,24 @@ class InboundGroupSessionData extends DataClass
         senderClaimedKey: senderClaimedKey ?? this.senderClaimedKey,
         uploaded: uploaded ?? this.uploaded,
       );
+  InboundGroupSessionData copyWithCompanion(InboundGroupSessionCompanion data) {
+    return InboundGroupSessionData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      pickle: data.pickle.present ? data.pickle.value : this.pickle,
+      content: data.content.present ? data.content.value : this.content,
+      indexes: data.indexes.present ? data.indexes.value : this.indexes,
+      allowedAtIndex: data.allowedAtIndex.present
+          ? data.allowedAtIndex.value
+          : this.allowedAtIndex,
+      senderKey: data.senderKey.present ? data.senderKey.value : this.senderKey,
+      senderClaimedKey: data.senderClaimedKey.present
+          ? data.senderClaimedKey.value
+          : this.senderClaimedKey,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('InboundGroupSessionData(')
@@ -3212,6 +3332,18 @@ class OutboundGroupSessionDataData extends DataClass
         deviceIds: deviceIds ?? this.deviceIds,
         creationTime: creationTime ?? this.creationTime,
       );
+  OutboundGroupSessionDataData copyWithCompanion(
+      OutboundGroupSessionDataCompanion data) {
+    return OutboundGroupSessionDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      pickle: data.pickle.present ? data.pickle.value : this.pickle,
+      deviceIds: data.deviceIds.present ? data.deviceIds.value : this.deviceIds,
+      creationTime: data.creationTime.present
+          ? data.creationTime.value
+          : this.creationTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('OutboundGroupSessionDataData(')
@@ -3475,6 +3607,16 @@ class SSSSCacheDataData extends DataClass
         cipherText: cipherText ?? this.cipherText,
         content: content ?? this.content,
       );
+  SSSSCacheDataData copyWithCompanion(SSSSCacheDataCompanion data) {
+    return SSSSCacheDataData(
+      type: data.type.present ? data.type.value : this.type,
+      keyId: data.keyId.present ? data.keyId.value : this.keyId,
+      cipherText:
+          data.cipherText.present ? data.cipherText.value : this.cipherText,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SSSSCacheDataData(')
@@ -3744,6 +3886,18 @@ class OlmSessionDataData extends DataClass
         pickle: pickle ?? this.pickle,
         lastReceived: lastReceived ?? this.lastReceived,
       );
+  OlmSessionDataData copyWithCompanion(OlmSessionDataCompanion data) {
+    return OlmSessionDataData(
+      identityKey:
+          data.identityKey.present ? data.identityKey.value : this.identityKey,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      pickle: data.pickle.present ? data.pickle.value : this.pickle,
+      lastReceived: data.lastReceived.present
+          ? data.lastReceived.value
+          : this.lastReceived,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('OlmSessionDataData(')
@@ -3984,6 +4138,15 @@ class SeenDeviceIdData extends DataClass
         deviceId: deviceId ?? this.deviceId,
         publicKeys: publicKeys ?? this.publicKeys,
       );
+  SeenDeviceIdData copyWithCompanion(SeenDeviceIdCompanion data) {
+    return SeenDeviceIdData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      publicKeys:
+          data.publicKeys.present ? data.publicKeys.value : this.publicKeys,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SeenDeviceIdData(')
@@ -4187,6 +4350,13 @@ class SeenPublicKeyData extends DataClass
         publicKey: publicKey ?? this.publicKey,
         deviceId: deviceId ?? this.deviceId,
       );
+  SeenPublicKeyData copyWithCompanion(SeenPublicKeyCompanion data) {
+    return SeenPublicKeyData(
+      publicKey: data.publicKey.present ? data.publicKey.value : this.publicKey,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SeenPublicKeyData(')
@@ -4505,6 +4675,21 @@ class UserDeviceKeyData extends DataClass
         blocked: blocked ?? this.blocked,
         lastActive: lastActive ?? this.lastActive,
       );
+  UserDeviceKeyData copyWithCompanion(UserDeviceKeyCompanion data) {
+    return UserDeviceKeyData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      content: data.content.present ? data.content.value : this.content,
+      lastSentMessage: data.lastSentMessage.present
+          ? data.lastSentMessage.value
+          : this.lastSentMessage,
+      verified: data.verified.present ? data.verified.value : this.verified,
+      blocked: data.blocked.present ? data.blocked.value : this.blocked,
+      lastActive:
+          data.lastActive.present ? data.lastActive.value : this.lastActive,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('UserDeviceKeyData(')
@@ -4768,6 +4953,13 @@ class UserDeviceKeyInfoData extends DataClass
         userId: userId ?? this.userId,
         outdated: outdated ?? this.outdated,
       );
+  UserDeviceKeyInfoData copyWithCompanion(UserDeviceKeyInfoCompanion data) {
+    return UserDeviceKeyInfoData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      outdated: data.outdated.present ? data.outdated.value : this.outdated,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('UserDeviceKeyInfoData(')
@@ -5036,6 +5228,16 @@ class UserCrossSigningKeyData extends DataClass
         verified: verified ?? this.verified,
         blocked: blocked ?? this.blocked,
       );
+  UserCrossSigningKeyData copyWithCompanion(UserCrossSigningKeyCompanion data) {
+    return UserCrossSigningKeyData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      publicKey: data.publicKey.present ? data.publicKey.value : this.publicKey,
+      content: data.content.present ? data.content.value : this.content,
+      verified: data.verified.present ? data.verified.value : this.verified,
+      blocked: data.blocked.present ? data.blocked.value : this.blocked,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('UserCrossSigningKeyData(')
@@ -5267,6 +5469,13 @@ class PresenceDataData extends DataClass
         userId: userId ?? this.userId,
         presence: presence ?? this.presence,
       );
+  PresenceDataData copyWithCompanion(PresenceDataCompanion data) {
+    return PresenceDataData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      presence: data.presence.present ? data.presence.value : this.presence,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PresenceDataData(')
@@ -5454,6 +5663,13 @@ class CachedProfileDataData extends DataClass
         userId: userId ?? this.userId,
         content: content ?? this.content,
       );
+  CachedProfileDataData copyWithCompanion(CachedProfileDataCompanion data) {
+    return CachedProfileDataData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('CachedProfileDataData(')
@@ -5538,8 +5754,8 @@ class CachedProfileDataCompanion
 
 abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
   _$MatrixSdkDriftDBImplementation(QueryExecutor e) : super(e);
-  _$MatrixSdkDriftDBImplementationManager get managers =>
-      _$MatrixSdkDriftDBImplementationManager(this);
+  $MatrixSdkDriftDBImplementationManager get managers =>
+      $MatrixSdkDriftDBImplementationManager(this);
   late final $ClientDataTable clientData = $ClientDataTable(this);
   late final $ToDeviceQueueTable toDeviceQueue = $ToDeviceQueueTable(this);
   late final $AccountDataTable accountData = $AccountDataTable(this);
@@ -5602,7 +5818,7 @@ abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$ClientDataTableInsertCompanionBuilder = ClientDataCompanion Function({
+typedef $$ClientDataTableCreateCompanionBuilder = ClientDataCompanion Function({
   Value<int> id,
   required String name,
   required String homeserverUrl,
@@ -5633,27 +5849,186 @@ typedef $$ClientDataTableUpdateCompanionBuilder = ClientDataCompanion Function({
   Value<String?> wellKnown,
 });
 
+class $$ClientDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ClientDataTable> {
+  $$ClientDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get homeserverUrl => $composableBuilder(
+      column: $table.homeserverUrl, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get token => $composableBuilder(
+      column: $table.token, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get tokenExpiresAt => $composableBuilder(
+      column: $table.tokenExpiresAt,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get refreshToken => $composableBuilder(
+      column: $table.refreshToken, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get prevBatch => $composableBuilder(
+      column: $table.prevBatch, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get olmAccount => $composableBuilder(
+      column: $table.olmAccount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get syncFilterId => $composableBuilder(
+      column: $table.syncFilterId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get wellKnown => $composableBuilder(
+      column: $table.wellKnown, builder: (column) => ColumnFilters(column));
+}
+
+class $$ClientDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ClientDataTable> {
+  $$ClientDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get homeserverUrl => $composableBuilder(
+      column: $table.homeserverUrl,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get token => $composableBuilder(
+      column: $table.token, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get tokenExpiresAt => $composableBuilder(
+      column: $table.tokenExpiresAt,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get refreshToken => $composableBuilder(
+      column: $table.refreshToken,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get prevBatch => $composableBuilder(
+      column: $table.prevBatch, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get olmAccount => $composableBuilder(
+      column: $table.olmAccount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get syncFilterId => $composableBuilder(
+      column: $table.syncFilterId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get wellKnown => $composableBuilder(
+      column: $table.wellKnown, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ClientDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ClientDataTable> {
+  $$ClientDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get homeserverUrl => $composableBuilder(
+      column: $table.homeserverUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get token =>
+      $composableBuilder(column: $table.token, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get tokenExpiresAt => $composableBuilder(
+      column: $table.tokenExpiresAt, builder: (column) => column);
+
+  GeneratedColumn<String> get refreshToken => $composableBuilder(
+      column: $table.refreshToken, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceName => $composableBuilder(
+      column: $table.deviceName, builder: (column) => column);
+
+  GeneratedColumn<String> get prevBatch =>
+      $composableBuilder(column: $table.prevBatch, builder: (column) => column);
+
+  GeneratedColumn<String> get olmAccount => $composableBuilder(
+      column: $table.olmAccount, builder: (column) => column);
+
+  GeneratedColumn<String> get syncFilterId => $composableBuilder(
+      column: $table.syncFilterId, builder: (column) => column);
+
+  GeneratedColumn<String> get wellKnown =>
+      $composableBuilder(column: $table.wellKnown, builder: (column) => column);
+}
+
 class $$ClientDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $ClientDataTable,
     ClientDataData,
     $$ClientDataTableFilterComposer,
     $$ClientDataTableOrderingComposer,
-    $$ClientDataTableProcessedTableManager,
-    $$ClientDataTableInsertCompanionBuilder,
-    $$ClientDataTableUpdateCompanionBuilder> {
+    $$ClientDataTableAnnotationComposer,
+    $$ClientDataTableCreateCompanionBuilder,
+    $$ClientDataTableUpdateCompanionBuilder,
+    (
+      ClientDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $ClientDataTable,
+          ClientDataData>
+    ),
+    ClientDataData,
+    PrefetchHooks Function()> {
   $$ClientDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $ClientDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ClientDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ClientDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$ClientDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$ClientDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ClientDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ClientDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> homeserverUrl = const Value.absent(),
@@ -5683,7 +6058,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             syncFilterId: syncFilterId,
             wellKnown: wellKnown,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
             required String homeserverUrl,
@@ -5713,160 +6088,30 @@ class $$ClientDataTableTableManager extends RootTableManager<
             syncFilterId: syncFilterId,
             wellKnown: wellKnown,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$ClientDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$ClientDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $ClientDataTable,
     ClientDataData,
     $$ClientDataTableFilterComposer,
     $$ClientDataTableOrderingComposer,
-    $$ClientDataTableProcessedTableManager,
-    $$ClientDataTableInsertCompanionBuilder,
-    $$ClientDataTableUpdateCompanionBuilder> {
-  $$ClientDataTableProcessedTableManager(super.$state);
-}
-
-class $$ClientDataTableFilterComposer
-    extends FilterComposer<_$MatrixSdkDriftDBImplementation, $ClientDataTable> {
-  $$ClientDataTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get homeserverUrl => $state.composableBuilder(
-      column: $state.table.homeserverUrl,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get token => $state.composableBuilder(
-      column: $state.table.token,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get tokenExpiresAt => $state.composableBuilder(
-      column: $state.table.tokenExpiresAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get refreshToken => $state.composableBuilder(
-      column: $state.table.refreshToken,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceName => $state.composableBuilder(
-      column: $state.table.deviceName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get prevBatch => $state.composableBuilder(
-      column: $state.table.prevBatch,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get olmAccount => $state.composableBuilder(
-      column: $state.table.olmAccount,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get syncFilterId => $state.composableBuilder(
-      column: $state.table.syncFilterId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get wellKnown => $state.composableBuilder(
-      column: $state.table.wellKnown,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$ClientDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $ClientDataTable> {
-  $$ClientDataTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get homeserverUrl => $state.composableBuilder(
-      column: $state.table.homeserverUrl,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get token => $state.composableBuilder(
-      column: $state.table.token,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get tokenExpiresAt => $state.composableBuilder(
-      column: $state.table.tokenExpiresAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get refreshToken => $state.composableBuilder(
-      column: $state.table.refreshToken,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceName => $state.composableBuilder(
-      column: $state.table.deviceName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get prevBatch => $state.composableBuilder(
-      column: $state.table.prevBatch,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get olmAccount => $state.composableBuilder(
-      column: $state.table.olmAccount,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get syncFilterId => $state.composableBuilder(
-      column: $state.table.syncFilterId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get wellKnown => $state.composableBuilder(
-      column: $state.table.wellKnown,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$ToDeviceQueueTableInsertCompanionBuilder = ToDeviceQueueCompanion
+    $$ClientDataTableAnnotationComposer,
+    $$ClientDataTableCreateCompanionBuilder,
+    $$ClientDataTableUpdateCompanionBuilder,
+    (
+      ClientDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $ClientDataTable,
+          ClientDataData>
+    ),
+    ClientDataData,
+    PrefetchHooks Function()>;
+typedef $$ToDeviceQueueTableCreateCompanionBuilder = ToDeviceQueueCompanion
     Function({
   Value<int> id,
   required String type,
@@ -5881,27 +6126,100 @@ typedef $$ToDeviceQueueTableUpdateCompanionBuilder = ToDeviceQueueCompanion
   Value<String> content,
 });
 
+class $$ToDeviceQueueTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable> {
+  $$ToDeviceQueueTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get txnId => $composableBuilder(
+      column: $table.txnId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$ToDeviceQueueTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable> {
+  $$ToDeviceQueueTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get txnId => $composableBuilder(
+      column: $table.txnId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ToDeviceQueueTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable> {
+  $$ToDeviceQueueTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get txnId =>
+      $composableBuilder(column: $table.txnId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$ToDeviceQueueTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $ToDeviceQueueTable,
     ToDeviceQueueData,
     $$ToDeviceQueueTableFilterComposer,
     $$ToDeviceQueueTableOrderingComposer,
-    $$ToDeviceQueueTableProcessedTableManager,
-    $$ToDeviceQueueTableInsertCompanionBuilder,
-    $$ToDeviceQueueTableUpdateCompanionBuilder> {
+    $$ToDeviceQueueTableAnnotationComposer,
+    $$ToDeviceQueueTableCreateCompanionBuilder,
+    $$ToDeviceQueueTableUpdateCompanionBuilder,
+    (
+      ToDeviceQueueData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable,
+          ToDeviceQueueData>
+    ),
+    ToDeviceQueueData,
+    PrefetchHooks Function()> {
   $$ToDeviceQueueTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $ToDeviceQueueTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ToDeviceQueueTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ToDeviceQueueTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$ToDeviceQueueTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$ToDeviceQueueTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ToDeviceQueueTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ToDeviceQueueTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> type = const Value.absent(),
             Value<String> txnId = const Value.absent(),
@@ -5913,7 +6231,7 @@ class $$ToDeviceQueueTableTableManager extends RootTableManager<
             txnId: txnId,
             content: content,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String type,
             required String txnId,
@@ -5925,70 +6243,30 @@ class $$ToDeviceQueueTableTableManager extends RootTableManager<
             txnId: txnId,
             content: content,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$ToDeviceQueueTableProcessedTableManager extends ProcessedTableManager<
+typedef $$ToDeviceQueueTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $ToDeviceQueueTable,
     ToDeviceQueueData,
     $$ToDeviceQueueTableFilterComposer,
     $$ToDeviceQueueTableOrderingComposer,
-    $$ToDeviceQueueTableProcessedTableManager,
-    $$ToDeviceQueueTableInsertCompanionBuilder,
-    $$ToDeviceQueueTableUpdateCompanionBuilder> {
-  $$ToDeviceQueueTableProcessedTableManager(super.$state);
-}
-
-class $$ToDeviceQueueTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable> {
-  $$ToDeviceQueueTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get txnId => $state.composableBuilder(
-      column: $state.table.txnId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$ToDeviceQueueTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable> {
-  $$ToDeviceQueueTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get txnId => $state.composableBuilder(
-      column: $state.table.txnId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$AccountDataTableInsertCompanionBuilder = AccountDataCompanion
+    $$ToDeviceQueueTableAnnotationComposer,
+    $$ToDeviceQueueTableCreateCompanionBuilder,
+    $$ToDeviceQueueTableUpdateCompanionBuilder,
+    (
+      ToDeviceQueueData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $ToDeviceQueueTable,
+          ToDeviceQueueData>
+    ),
+    ToDeviceQueueData,
+    PrefetchHooks Function()>;
+typedef $$AccountDataTableCreateCompanionBuilder = AccountDataCompanion
     Function({
   required String type,
   required String content,
@@ -6001,27 +6279,82 @@ typedef $$AccountDataTableUpdateCompanionBuilder = AccountDataCompanion
   Value<int> rowid,
 });
 
+class $$AccountDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $AccountDataTable> {
+  $$AccountDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$AccountDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $AccountDataTable> {
+  $$AccountDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$AccountDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $AccountDataTable> {
+  $$AccountDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$AccountDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $AccountDataTable,
     AccountDataData,
     $$AccountDataTableFilterComposer,
     $$AccountDataTableOrderingComposer,
-    $$AccountDataTableProcessedTableManager,
-    $$AccountDataTableInsertCompanionBuilder,
-    $$AccountDataTableUpdateCompanionBuilder> {
+    $$AccountDataTableAnnotationComposer,
+    $$AccountDataTableCreateCompanionBuilder,
+    $$AccountDataTableUpdateCompanionBuilder,
+    (
+      AccountDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $AccountDataTable,
+          AccountDataData>
+    ),
+    AccountDataData,
+    PrefetchHooks Function()> {
   $$AccountDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $AccountDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$AccountDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$AccountDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$AccountDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$AccountDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AccountDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AccountDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> type = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -6031,7 +6364,7 @@ class $$AccountDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String type,
             required String content,
             Value<int> rowid = const Value.absent(),
@@ -6041,50 +6374,30 @@ class $$AccountDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$AccountDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$AccountDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $AccountDataTable,
     AccountDataData,
     $$AccountDataTableFilterComposer,
     $$AccountDataTableOrderingComposer,
-    $$AccountDataTableProcessedTableManager,
-    $$AccountDataTableInsertCompanionBuilder,
-    $$AccountDataTableUpdateCompanionBuilder> {
-  $$AccountDataTableProcessedTableManager(super.$state);
-}
-
-class $$AccountDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $AccountDataTable> {
-  $$AccountDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$AccountDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $AccountDataTable> {
-  $$AccountDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$RoomDataTableInsertCompanionBuilder = RoomDataCompanion Function({
+    $$AccountDataTableAnnotationComposer,
+    $$AccountDataTableCreateCompanionBuilder,
+    $$AccountDataTableUpdateCompanionBuilder,
+    (
+      AccountDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $AccountDataTable,
+          AccountDataData>
+    ),
+    AccountDataData,
+    PrefetchHooks Function()>;
+typedef $$RoomDataTableCreateCompanionBuilder = RoomDataCompanion Function({
   required String roomId,
   required String content,
   Value<int> rowid,
@@ -6095,27 +6408,82 @@ typedef $$RoomDataTableUpdateCompanionBuilder = RoomDataCompanion Function({
   Value<int> rowid,
 });
 
+class $$RoomDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomDataTable> {
+  $$RoomDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$RoomDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomDataTable> {
+  $$RoomDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RoomDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomDataTable> {
+  $$RoomDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$RoomDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomDataTable,
     RoomDataData,
     $$RoomDataTableFilterComposer,
     $$RoomDataTableOrderingComposer,
-    $$RoomDataTableProcessedTableManager,
-    $$RoomDataTableInsertCompanionBuilder,
-    $$RoomDataTableUpdateCompanionBuilder> {
+    $$RoomDataTableAnnotationComposer,
+    $$RoomDataTableCreateCompanionBuilder,
+    $$RoomDataTableUpdateCompanionBuilder,
+    (
+      RoomDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomDataTable,
+          RoomDataData>
+    ),
+    RoomDataData,
+    PrefetchHooks Function()> {
   $$RoomDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $RoomDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$RoomDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoomDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoomDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$RoomDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -6125,7 +6493,7 @@ class $$RoomDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String content,
             Value<int> rowid = const Value.absent(),
@@ -6135,50 +6503,30 @@ class $$RoomDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$RoomDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$RoomDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomDataTable,
     RoomDataData,
     $$RoomDataTableFilterComposer,
     $$RoomDataTableOrderingComposer,
-    $$RoomDataTableProcessedTableManager,
-    $$RoomDataTableInsertCompanionBuilder,
-    $$RoomDataTableUpdateCompanionBuilder> {
-  $$RoomDataTableProcessedTableManager(super.$state);
-}
-
-class $$RoomDataTableFilterComposer
-    extends FilterComposer<_$MatrixSdkDriftDBImplementation, $RoomDataTable> {
-  $$RoomDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$RoomDataTableOrderingComposer
-    extends OrderingComposer<_$MatrixSdkDriftDBImplementation, $RoomDataTable> {
-  $$RoomDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$PreloadRoomStateTableInsertCompanionBuilder
+    $$RoomDataTableAnnotationComposer,
+    $$RoomDataTableCreateCompanionBuilder,
+    $$RoomDataTableUpdateCompanionBuilder,
+    (
+      RoomDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomDataTable,
+          RoomDataData>
+    ),
+    RoomDataData,
+    PrefetchHooks Function()>;
+typedef $$PreloadRoomStateTableCreateCompanionBuilder
     = PreloadRoomStateCompanion Function({
   required String roomId,
   required String type,
@@ -6193,27 +6541,91 @@ typedef $$PreloadRoomStateTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$PreloadRoomStateTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable> {
+  $$PreloadRoomStateTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$PreloadRoomStateTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable> {
+  $$PreloadRoomStateTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PreloadRoomStateTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable> {
+  $$PreloadRoomStateTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$PreloadRoomStateTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $PreloadRoomStateTable,
     PreloadRoomStateData,
     $$PreloadRoomStateTableFilterComposer,
     $$PreloadRoomStateTableOrderingComposer,
-    $$PreloadRoomStateTableProcessedTableManager,
-    $$PreloadRoomStateTableInsertCompanionBuilder,
-    $$PreloadRoomStateTableUpdateCompanionBuilder> {
+    $$PreloadRoomStateTableAnnotationComposer,
+    $$PreloadRoomStateTableCreateCompanionBuilder,
+    $$PreloadRoomStateTableUpdateCompanionBuilder,
+    (
+      PreloadRoomStateData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable,
+          PreloadRoomStateData>
+    ),
+    PreloadRoomStateData,
+    PrefetchHooks Function()> {
   $$PreloadRoomStateTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $PreloadRoomStateTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PreloadRoomStateTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PreloadRoomStateTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$PreloadRoomStateTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$PreloadRoomStateTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PreloadRoomStateTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PreloadRoomStateTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> type = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -6225,7 +6637,7 @@ class $$PreloadRoomStateTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String type,
             required String content,
@@ -6237,61 +6649,30 @@ class $$PreloadRoomStateTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PreloadRoomStateTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $PreloadRoomStateTable,
-        PreloadRoomStateData,
-        $$PreloadRoomStateTableFilterComposer,
-        $$PreloadRoomStateTableOrderingComposer,
-        $$PreloadRoomStateTableProcessedTableManager,
-        $$PreloadRoomStateTableInsertCompanionBuilder,
-        $$PreloadRoomStateTableUpdateCompanionBuilder> {
-  $$PreloadRoomStateTableProcessedTableManager(super.$state);
-}
-
-class $$PreloadRoomStateTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable> {
-  $$PreloadRoomStateTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PreloadRoomStateTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable> {
-  $$PreloadRoomStateTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$NonPreloadRoomStateTableInsertCompanionBuilder
+typedef $$PreloadRoomStateTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $PreloadRoomStateTable,
+    PreloadRoomStateData,
+    $$PreloadRoomStateTableFilterComposer,
+    $$PreloadRoomStateTableOrderingComposer,
+    $$PreloadRoomStateTableAnnotationComposer,
+    $$PreloadRoomStateTableCreateCompanionBuilder,
+    $$PreloadRoomStateTableUpdateCompanionBuilder,
+    (
+      PreloadRoomStateData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $PreloadRoomStateTable,
+          PreloadRoomStateData>
+    ),
+    PreloadRoomStateData,
+    PrefetchHooks Function()>;
+typedef $$NonPreloadRoomStateTableCreateCompanionBuilder
     = NonPreloadRoomStateCompanion Function({
   required String roomId,
   required String type,
@@ -6306,27 +6687,93 @@ typedef $$NonPreloadRoomStateTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$NonPreloadRoomStateTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $NonPreloadRoomStateTable> {
+  $$NonPreloadRoomStateTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$NonPreloadRoomStateTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $NonPreloadRoomStateTable> {
+  $$NonPreloadRoomStateTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$NonPreloadRoomStateTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $NonPreloadRoomStateTable> {
+  $$NonPreloadRoomStateTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$NonPreloadRoomStateTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $NonPreloadRoomStateTable,
     NonPreloadRoomStateData,
     $$NonPreloadRoomStateTableFilterComposer,
     $$NonPreloadRoomStateTableOrderingComposer,
-    $$NonPreloadRoomStateTableProcessedTableManager,
-    $$NonPreloadRoomStateTableInsertCompanionBuilder,
-    $$NonPreloadRoomStateTableUpdateCompanionBuilder> {
+    $$NonPreloadRoomStateTableAnnotationComposer,
+    $$NonPreloadRoomStateTableCreateCompanionBuilder,
+    $$NonPreloadRoomStateTableUpdateCompanionBuilder,
+    (
+      NonPreloadRoomStateData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $NonPreloadRoomStateTable, NonPreloadRoomStateData>
+    ),
+    NonPreloadRoomStateData,
+    PrefetchHooks Function()> {
   $$NonPreloadRoomStateTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $NonPreloadRoomStateTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$NonPreloadRoomStateTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$NonPreloadRoomStateTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$NonPreloadRoomStateTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$NonPreloadRoomStateTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NonPreloadRoomStateTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NonPreloadRoomStateTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> type = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -6338,7 +6785,7 @@ class $$NonPreloadRoomStateTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String type,
             required String content,
@@ -6350,61 +6797,30 @@ class $$NonPreloadRoomStateTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$NonPreloadRoomStateTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $NonPreloadRoomStateTable,
-        NonPreloadRoomStateData,
-        $$NonPreloadRoomStateTableFilterComposer,
-        $$NonPreloadRoomStateTableOrderingComposer,
-        $$NonPreloadRoomStateTableProcessedTableManager,
-        $$NonPreloadRoomStateTableInsertCompanionBuilder,
-        $$NonPreloadRoomStateTableUpdateCompanionBuilder> {
-  $$NonPreloadRoomStateTableProcessedTableManager(super.$state);
-}
-
-class $$NonPreloadRoomStateTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $NonPreloadRoomStateTable> {
-  $$NonPreloadRoomStateTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$NonPreloadRoomStateTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $NonPreloadRoomStateTable> {
-  $$NonPreloadRoomStateTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$RoomAccountDataTableInsertCompanionBuilder = RoomAccountDataCompanion
+typedef $$NonPreloadRoomStateTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $NonPreloadRoomStateTable,
+    NonPreloadRoomStateData,
+    $$NonPreloadRoomStateTableFilterComposer,
+    $$NonPreloadRoomStateTableOrderingComposer,
+    $$NonPreloadRoomStateTableAnnotationComposer,
+    $$NonPreloadRoomStateTableCreateCompanionBuilder,
+    $$NonPreloadRoomStateTableUpdateCompanionBuilder,
+    (
+      NonPreloadRoomStateData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $NonPreloadRoomStateTable, NonPreloadRoomStateData>
+    ),
+    NonPreloadRoomStateData,
+    PrefetchHooks Function()>;
+typedef $$RoomAccountDataTableCreateCompanionBuilder = RoomAccountDataCompanion
     Function({
   required String roomId,
   required String type,
@@ -6419,27 +6835,91 @@ typedef $$RoomAccountDataTableUpdateCompanionBuilder = RoomAccountDataCompanion
   Value<int> rowid,
 });
 
+class $$RoomAccountDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomAccountDataTable> {
+  $$RoomAccountDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$RoomAccountDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomAccountDataTable> {
+  $$RoomAccountDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RoomAccountDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomAccountDataTable> {
+  $$RoomAccountDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$RoomAccountDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomAccountDataTable,
     RoomAccountDataData,
     $$RoomAccountDataTableFilterComposer,
     $$RoomAccountDataTableOrderingComposer,
-    $$RoomAccountDataTableProcessedTableManager,
-    $$RoomAccountDataTableInsertCompanionBuilder,
-    $$RoomAccountDataTableUpdateCompanionBuilder> {
+    $$RoomAccountDataTableAnnotationComposer,
+    $$RoomAccountDataTableCreateCompanionBuilder,
+    $$RoomAccountDataTableUpdateCompanionBuilder,
+    (
+      RoomAccountDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomAccountDataTable,
+          RoomAccountDataData>
+    ),
+    RoomAccountDataData,
+    PrefetchHooks Function()> {
   $$RoomAccountDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $RoomAccountDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$RoomAccountDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoomAccountDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoomAccountDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$RoomAccountDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomAccountDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomAccountDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> type = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -6451,7 +6931,7 @@ class $$RoomAccountDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String type,
             required String content,
@@ -6463,60 +6943,30 @@ class $$RoomAccountDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$RoomAccountDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$RoomAccountDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomAccountDataTable,
     RoomAccountDataData,
     $$RoomAccountDataTableFilterComposer,
     $$RoomAccountDataTableOrderingComposer,
-    $$RoomAccountDataTableProcessedTableManager,
-    $$RoomAccountDataTableInsertCompanionBuilder,
-    $$RoomAccountDataTableUpdateCompanionBuilder> {
-  $$RoomAccountDataTableProcessedTableManager(super.$state);
-}
-
-class $$RoomAccountDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $RoomAccountDataTable> {
-  $$RoomAccountDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$RoomAccountDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $RoomAccountDataTable> {
-  $$RoomAccountDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$EventDataTableInsertCompanionBuilder = EventDataCompanion Function({
+    $$RoomAccountDataTableAnnotationComposer,
+    $$RoomAccountDataTableCreateCompanionBuilder,
+    $$RoomAccountDataTableUpdateCompanionBuilder,
+    (
+      RoomAccountDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomAccountDataTable,
+          RoomAccountDataData>
+    ),
+    RoomAccountDataData,
+    PrefetchHooks Function()>;
+typedef $$EventDataTableCreateCompanionBuilder = EventDataCompanion Function({
   required String roomId,
   required String eventId,
   required String content,
@@ -6529,27 +6979,91 @@ typedef $$EventDataTableUpdateCompanionBuilder = EventDataCompanion Function({
   Value<int> rowid,
 });
 
+class $$EventDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $EventDataTable> {
+  $$EventDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get eventId => $composableBuilder(
+      column: $table.eventId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$EventDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $EventDataTable> {
+  $$EventDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get eventId => $composableBuilder(
+      column: $table.eventId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$EventDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $EventDataTable> {
+  $$EventDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get eventId =>
+      $composableBuilder(column: $table.eventId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$EventDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $EventDataTable,
     EventDataData,
     $$EventDataTableFilterComposer,
     $$EventDataTableOrderingComposer,
-    $$EventDataTableProcessedTableManager,
-    $$EventDataTableInsertCompanionBuilder,
-    $$EventDataTableUpdateCompanionBuilder> {
+    $$EventDataTableAnnotationComposer,
+    $$EventDataTableCreateCompanionBuilder,
+    $$EventDataTableUpdateCompanionBuilder,
+    (
+      EventDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $EventDataTable,
+          EventDataData>
+    ),
+    EventDataData,
+    PrefetchHooks Function()> {
   $$EventDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $EventDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$EventDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$EventDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$EventDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$EventDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EventDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EventDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> eventId = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -6561,7 +7075,7 @@ class $$EventDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String eventId,
             required String content,
@@ -6573,60 +7087,30 @@ class $$EventDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$EventDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$EventDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $EventDataTable,
     EventDataData,
     $$EventDataTableFilterComposer,
     $$EventDataTableOrderingComposer,
-    $$EventDataTableProcessedTableManager,
-    $$EventDataTableInsertCompanionBuilder,
-    $$EventDataTableUpdateCompanionBuilder> {
-  $$EventDataTableProcessedTableManager(super.$state);
-}
-
-class $$EventDataTableFilterComposer
-    extends FilterComposer<_$MatrixSdkDriftDBImplementation, $EventDataTable> {
-  $$EventDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get eventId => $state.composableBuilder(
-      column: $state.table.eventId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$EventDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $EventDataTable> {
-  $$EventDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get eventId => $state.composableBuilder(
-      column: $state.table.eventId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$TimelineFragmentDataTableInsertCompanionBuilder
+    $$EventDataTableAnnotationComposer,
+    $$EventDataTableCreateCompanionBuilder,
+    $$EventDataTableUpdateCompanionBuilder,
+    (
+      EventDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $EventDataTable,
+          EventDataData>
+    ),
+    EventDataData,
+    PrefetchHooks Function()>;
+typedef $$TimelineFragmentDataTableCreateCompanionBuilder
     = TimelineFragmentDataCompanion Function({
   required String roomId,
   required bool sending,
@@ -6641,27 +7125,94 @@ typedef $$TimelineFragmentDataTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$TimelineFragmentDataTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $TimelineFragmentDataTable> {
+  $$TimelineFragmentDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get sending => $composableBuilder(
+      column: $table.sending, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fragmentsList => $composableBuilder(
+      column: $table.fragmentsList, builder: (column) => ColumnFilters(column));
+}
+
+class $$TimelineFragmentDataTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $TimelineFragmentDataTable> {
+  $$TimelineFragmentDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get sending => $composableBuilder(
+      column: $table.sending, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fragmentsList => $composableBuilder(
+      column: $table.fragmentsList,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$TimelineFragmentDataTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $TimelineFragmentDataTable> {
+  $$TimelineFragmentDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<bool> get sending =>
+      $composableBuilder(column: $table.sending, builder: (column) => column);
+
+  GeneratedColumn<String> get fragmentsList => $composableBuilder(
+      column: $table.fragmentsList, builder: (column) => column);
+}
+
 class $$TimelineFragmentDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $TimelineFragmentDataTable,
     TimelineFragmentDataData,
     $$TimelineFragmentDataTableFilterComposer,
     $$TimelineFragmentDataTableOrderingComposer,
-    $$TimelineFragmentDataTableProcessedTableManager,
-    $$TimelineFragmentDataTableInsertCompanionBuilder,
-    $$TimelineFragmentDataTableUpdateCompanionBuilder> {
+    $$TimelineFragmentDataTableAnnotationComposer,
+    $$TimelineFragmentDataTableCreateCompanionBuilder,
+    $$TimelineFragmentDataTableUpdateCompanionBuilder,
+    (
+      TimelineFragmentDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $TimelineFragmentDataTable, TimelineFragmentDataData>
+    ),
+    TimelineFragmentDataData,
+    PrefetchHooks Function()> {
   $$TimelineFragmentDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $TimelineFragmentDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$TimelineFragmentDataTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$TimelineFragmentDataTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$TimelineFragmentDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$TimelineFragmentDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TimelineFragmentDataTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TimelineFragmentDataTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<bool> sending = const Value.absent(),
             Value<String> fragmentsList = const Value.absent(),
@@ -6673,7 +7224,7 @@ class $$TimelineFragmentDataTableTableManager extends RootTableManager<
             fragmentsList: fragmentsList,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required bool sending,
             required String fragmentsList,
@@ -6685,61 +7236,31 @@ class $$TimelineFragmentDataTableTableManager extends RootTableManager<
             fragmentsList: fragmentsList,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$TimelineFragmentDataTableProcessedTableManager
-    extends ProcessedTableManager<
+typedef $$TimelineFragmentDataTableProcessedTableManager
+    = ProcessedTableManager<
         _$MatrixSdkDriftDBImplementation,
         $TimelineFragmentDataTable,
         TimelineFragmentDataData,
         $$TimelineFragmentDataTableFilterComposer,
         $$TimelineFragmentDataTableOrderingComposer,
-        $$TimelineFragmentDataTableProcessedTableManager,
-        $$TimelineFragmentDataTableInsertCompanionBuilder,
-        $$TimelineFragmentDataTableUpdateCompanionBuilder> {
-  $$TimelineFragmentDataTableProcessedTableManager(super.$state);
-}
-
-class $$TimelineFragmentDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $TimelineFragmentDataTable> {
-  $$TimelineFragmentDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get sending => $state.composableBuilder(
-      column: $state.table.sending,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get fragmentsList => $state.composableBuilder(
-      column: $state.table.fragmentsList,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$TimelineFragmentDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $TimelineFragmentDataTable> {
-  $$TimelineFragmentDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get sending => $state.composableBuilder(
-      column: $state.table.sending,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get fragmentsList => $state.composableBuilder(
-      column: $state.table.fragmentsList,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$RoomMembersTableInsertCompanionBuilder = RoomMembersCompanion
+        $$TimelineFragmentDataTableAnnotationComposer,
+        $$TimelineFragmentDataTableCreateCompanionBuilder,
+        $$TimelineFragmentDataTableUpdateCompanionBuilder,
+        (
+          TimelineFragmentDataData,
+          BaseReferences<_$MatrixSdkDriftDBImplementation,
+              $TimelineFragmentDataTable, TimelineFragmentDataData>
+        ),
+        TimelineFragmentDataData,
+        PrefetchHooks Function()>;
+typedef $$RoomMembersTableCreateCompanionBuilder = RoomMembersCompanion
     Function({
   required String roomId,
   required String userId,
@@ -6754,27 +7275,91 @@ typedef $$RoomMembersTableUpdateCompanionBuilder = RoomMembersCompanion
   Value<int> rowid,
 });
 
+class $$RoomMembersTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomMembersTable> {
+  $$RoomMembersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$RoomMembersTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomMembersTable> {
+  $$RoomMembersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RoomMembersTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $RoomMembersTable> {
+  $$RoomMembersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$RoomMembersTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomMembersTable,
     RoomMember,
     $$RoomMembersTableFilterComposer,
     $$RoomMembersTableOrderingComposer,
-    $$RoomMembersTableProcessedTableManager,
-    $$RoomMembersTableInsertCompanionBuilder,
-    $$RoomMembersTableUpdateCompanionBuilder> {
+    $$RoomMembersTableAnnotationComposer,
+    $$RoomMembersTableCreateCompanionBuilder,
+    $$RoomMembersTableUpdateCompanionBuilder,
+    (
+      RoomMember,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomMembersTable,
+          RoomMember>
+    ),
+    RoomMember,
+    PrefetchHooks Function()> {
   $$RoomMembersTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $RoomMembersTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$RoomMembersTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoomMembersTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoomMembersTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$RoomMembersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomMembersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomMembersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> userId = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -6786,7 +7371,7 @@ class $$RoomMembersTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String userId,
             required String content,
@@ -6798,60 +7383,30 @@ class $$RoomMembersTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$RoomMembersTableProcessedTableManager extends ProcessedTableManager<
+typedef $$RoomMembersTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $RoomMembersTable,
     RoomMember,
     $$RoomMembersTableFilterComposer,
     $$RoomMembersTableOrderingComposer,
-    $$RoomMembersTableProcessedTableManager,
-    $$RoomMembersTableInsertCompanionBuilder,
-    $$RoomMembersTableUpdateCompanionBuilder> {
-  $$RoomMembersTableProcessedTableManager(super.$state);
-}
-
-class $$RoomMembersTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $RoomMembersTable> {
-  $$RoomMembersTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$RoomMembersTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $RoomMembersTable> {
-  $$RoomMembersTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$InboundGroupSessionTableInsertCompanionBuilder
+    $$RoomMembersTableAnnotationComposer,
+    $$RoomMembersTableCreateCompanionBuilder,
+    $$RoomMembersTableUpdateCompanionBuilder,
+    (
+      RoomMember,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $RoomMembersTable,
+          RoomMember>
+    ),
+    RoomMember,
+    PrefetchHooks Function()>;
+typedef $$InboundGroupSessionTableCreateCompanionBuilder
     = InboundGroupSessionCompanion Function({
   required String roomId,
   required String sessionId,
@@ -6878,27 +7433,151 @@ typedef $$InboundGroupSessionTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$InboundGroupSessionTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $InboundGroupSessionTable> {
+  $$InboundGroupSessionTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+      column: $table.sessionId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get indexes => $composableBuilder(
+      column: $table.indexes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get allowedAtIndex => $composableBuilder(
+      column: $table.allowedAtIndex,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get senderKey => $composableBuilder(
+      column: $table.senderKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get senderClaimedKey => $composableBuilder(
+      column: $table.senderClaimedKey,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+      column: $table.uploaded, builder: (column) => ColumnFilters(column));
+}
+
+class $$InboundGroupSessionTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $InboundGroupSessionTable> {
+  $$InboundGroupSessionTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+      column: $table.sessionId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get indexes => $composableBuilder(
+      column: $table.indexes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get allowedAtIndex => $composableBuilder(
+      column: $table.allowedAtIndex,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get senderKey => $composableBuilder(
+      column: $table.senderKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get senderClaimedKey => $composableBuilder(
+      column: $table.senderClaimedKey,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+      column: $table.uploaded, builder: (column) => ColumnOrderings(column));
+}
+
+class $$InboundGroupSessionTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $InboundGroupSessionTable> {
+  $$InboundGroupSessionTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get pickle =>
+      $composableBuilder(column: $table.pickle, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get indexes =>
+      $composableBuilder(column: $table.indexes, builder: (column) => column);
+
+  GeneratedColumn<String> get allowedAtIndex => $composableBuilder(
+      column: $table.allowedAtIndex, builder: (column) => column);
+
+  GeneratedColumn<String> get senderKey =>
+      $composableBuilder(column: $table.senderKey, builder: (column) => column);
+
+  GeneratedColumn<String> get senderClaimedKey => $composableBuilder(
+      column: $table.senderClaimedKey, builder: (column) => column);
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+}
+
 class $$InboundGroupSessionTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $InboundGroupSessionTable,
     InboundGroupSessionData,
     $$InboundGroupSessionTableFilterComposer,
     $$InboundGroupSessionTableOrderingComposer,
-    $$InboundGroupSessionTableProcessedTableManager,
-    $$InboundGroupSessionTableInsertCompanionBuilder,
-    $$InboundGroupSessionTableUpdateCompanionBuilder> {
+    $$InboundGroupSessionTableAnnotationComposer,
+    $$InboundGroupSessionTableCreateCompanionBuilder,
+    $$InboundGroupSessionTableUpdateCompanionBuilder,
+    (
+      InboundGroupSessionData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $InboundGroupSessionTable, InboundGroupSessionData>
+    ),
+    InboundGroupSessionData,
+    PrefetchHooks Function()> {
   $$InboundGroupSessionTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $InboundGroupSessionTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$InboundGroupSessionTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$InboundGroupSessionTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$InboundGroupSessionTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$InboundGroupSessionTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InboundGroupSessionTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InboundGroupSessionTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> sessionId = const Value.absent(),
             Value<String> pickle = const Value.absent(),
@@ -6922,7 +7601,7 @@ class $$InboundGroupSessionTableTableManager extends RootTableManager<
             uploaded: uploaded,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String sessionId,
             required String pickle,
@@ -6946,121 +7625,30 @@ class $$InboundGroupSessionTableTableManager extends RootTableManager<
             uploaded: uploaded,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$InboundGroupSessionTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $InboundGroupSessionTable,
-        InboundGroupSessionData,
-        $$InboundGroupSessionTableFilterComposer,
-        $$InboundGroupSessionTableOrderingComposer,
-        $$InboundGroupSessionTableProcessedTableManager,
-        $$InboundGroupSessionTableInsertCompanionBuilder,
-        $$InboundGroupSessionTableUpdateCompanionBuilder> {
-  $$InboundGroupSessionTableProcessedTableManager(super.$state);
-}
-
-class $$InboundGroupSessionTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $InboundGroupSessionTable> {
-  $$InboundGroupSessionTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get sessionId => $state.composableBuilder(
-      column: $state.table.sessionId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get indexes => $state.composableBuilder(
-      column: $state.table.indexes,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get allowedAtIndex => $state.composableBuilder(
-      column: $state.table.allowedAtIndex,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get senderKey => $state.composableBuilder(
-      column: $state.table.senderKey,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get senderClaimedKey => $state.composableBuilder(
-      column: $state.table.senderClaimedKey,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get uploaded => $state.composableBuilder(
-      column: $state.table.uploaded,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$InboundGroupSessionTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $InboundGroupSessionTable> {
-  $$InboundGroupSessionTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get sessionId => $state.composableBuilder(
-      column: $state.table.sessionId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get indexes => $state.composableBuilder(
-      column: $state.table.indexes,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get allowedAtIndex => $state.composableBuilder(
-      column: $state.table.allowedAtIndex,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get senderKey => $state.composableBuilder(
-      column: $state.table.senderKey,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get senderClaimedKey => $state.composableBuilder(
-      column: $state.table.senderClaimedKey,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get uploaded => $state.composableBuilder(
-      column: $state.table.uploaded,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$OutboundGroupSessionDataTableInsertCompanionBuilder
+typedef $$InboundGroupSessionTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $InboundGroupSessionTable,
+    InboundGroupSessionData,
+    $$InboundGroupSessionTableFilterComposer,
+    $$InboundGroupSessionTableOrderingComposer,
+    $$InboundGroupSessionTableAnnotationComposer,
+    $$InboundGroupSessionTableCreateCompanionBuilder,
+    $$InboundGroupSessionTableUpdateCompanionBuilder,
+    (
+      InboundGroupSessionData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $InboundGroupSessionTable, InboundGroupSessionData>
+    ),
+    InboundGroupSessionData,
+    PrefetchHooks Function()>;
+typedef $$OutboundGroupSessionDataTableCreateCompanionBuilder
     = OutboundGroupSessionDataCompanion Function({
   required String roomId,
   required String pickle,
@@ -7077,27 +7665,104 @@ typedef $$OutboundGroupSessionDataTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$OutboundGroupSessionDataTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $OutboundGroupSessionDataTable> {
+  $$OutboundGroupSessionDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceIds => $composableBuilder(
+      column: $table.deviceIds, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => ColumnFilters(column));
+}
+
+class $$OutboundGroupSessionDataTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $OutboundGroupSessionDataTable> {
+  $$OutboundGroupSessionDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceIds => $composableBuilder(
+      column: $table.deviceIds, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get creationTime => $composableBuilder(
+      column: $table.creationTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$OutboundGroupSessionDataTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $OutboundGroupSessionDataTable> {
+  $$OutboundGroupSessionDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get pickle =>
+      $composableBuilder(column: $table.pickle, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceIds =>
+      $composableBuilder(column: $table.deviceIds, builder: (column) => column);
+
+  GeneratedColumn<int> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => column);
+}
+
 class $$OutboundGroupSessionDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $OutboundGroupSessionDataTable,
     OutboundGroupSessionDataData,
     $$OutboundGroupSessionDataTableFilterComposer,
     $$OutboundGroupSessionDataTableOrderingComposer,
-    $$OutboundGroupSessionDataTableProcessedTableManager,
-    $$OutboundGroupSessionDataTableInsertCompanionBuilder,
-    $$OutboundGroupSessionDataTableUpdateCompanionBuilder> {
+    $$OutboundGroupSessionDataTableAnnotationComposer,
+    $$OutboundGroupSessionDataTableCreateCompanionBuilder,
+    $$OutboundGroupSessionDataTableUpdateCompanionBuilder,
+    (
+      OutboundGroupSessionDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $OutboundGroupSessionDataTable, OutboundGroupSessionDataData>
+    ),
+    OutboundGroupSessionDataData,
+    PrefetchHooks Function()> {
   $$OutboundGroupSessionDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $OutboundGroupSessionDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$OutboundGroupSessionDataTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$OutboundGroupSessionDataTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$OutboundGroupSessionDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$OutboundGroupSessionDataTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OutboundGroupSessionDataTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OutboundGroupSessionDataTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> pickle = const Value.absent(),
             Value<String> deviceIds = const Value.absent(),
@@ -7111,7 +7776,7 @@ class $$OutboundGroupSessionDataTableTableManager extends RootTableManager<
             creationTime: creationTime,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String roomId,
             required String pickle,
             required String deviceIds,
@@ -7125,71 +7790,31 @@ class $$OutboundGroupSessionDataTableTableManager extends RootTableManager<
             creationTime: creationTime,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$OutboundGroupSessionDataTableProcessedTableManager
-    extends ProcessedTableManager<
+typedef $$OutboundGroupSessionDataTableProcessedTableManager
+    = ProcessedTableManager<
         _$MatrixSdkDriftDBImplementation,
         $OutboundGroupSessionDataTable,
         OutboundGroupSessionDataData,
         $$OutboundGroupSessionDataTableFilterComposer,
         $$OutboundGroupSessionDataTableOrderingComposer,
-        $$OutboundGroupSessionDataTableProcessedTableManager,
-        $$OutboundGroupSessionDataTableInsertCompanionBuilder,
-        $$OutboundGroupSessionDataTableUpdateCompanionBuilder> {
-  $$OutboundGroupSessionDataTableProcessedTableManager(super.$state);
-}
-
-class $$OutboundGroupSessionDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $OutboundGroupSessionDataTable> {
-  $$OutboundGroupSessionDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceIds => $state.composableBuilder(
-      column: $state.table.deviceIds,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get creationTime => $state.composableBuilder(
-      column: $state.table.creationTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$OutboundGroupSessionDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $OutboundGroupSessionDataTable> {
-  $$OutboundGroupSessionDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get roomId => $state.composableBuilder(
-      column: $state.table.roomId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceIds => $state.composableBuilder(
-      column: $state.table.deviceIds,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get creationTime => $state.composableBuilder(
-      column: $state.table.creationTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$SSSSCacheDataTableInsertCompanionBuilder = SSSSCacheDataCompanion
+        $$OutboundGroupSessionDataTableAnnotationComposer,
+        $$OutboundGroupSessionDataTableCreateCompanionBuilder,
+        $$OutboundGroupSessionDataTableUpdateCompanionBuilder,
+        (
+          OutboundGroupSessionDataData,
+          BaseReferences<_$MatrixSdkDriftDBImplementation,
+              $OutboundGroupSessionDataTable, OutboundGroupSessionDataData>
+        ),
+        OutboundGroupSessionDataData,
+        PrefetchHooks Function()>;
+typedef $$SSSSCacheDataTableCreateCompanionBuilder = SSSSCacheDataCompanion
     Function({
   required String type,
   required String keyId,
@@ -7206,27 +7831,100 @@ typedef $$SSSSCacheDataTableUpdateCompanionBuilder = SSSSCacheDataCompanion
   Value<int> rowid,
 });
 
+class $$SSSSCacheDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable> {
+  $$SSSSCacheDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get keyId => $composableBuilder(
+      column: $table.keyId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cipherText => $composableBuilder(
+      column: $table.cipherText, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$SSSSCacheDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable> {
+  $$SSSSCacheDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get keyId => $composableBuilder(
+      column: $table.keyId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cipherText => $composableBuilder(
+      column: $table.cipherText, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SSSSCacheDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable> {
+  $$SSSSCacheDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get keyId =>
+      $composableBuilder(column: $table.keyId, builder: (column) => column);
+
+  GeneratedColumn<String> get cipherText => $composableBuilder(
+      column: $table.cipherText, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$SSSSCacheDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SSSSCacheDataTable,
     SSSSCacheDataData,
     $$SSSSCacheDataTableFilterComposer,
     $$SSSSCacheDataTableOrderingComposer,
-    $$SSSSCacheDataTableProcessedTableManager,
-    $$SSSSCacheDataTableInsertCompanionBuilder,
-    $$SSSSCacheDataTableUpdateCompanionBuilder> {
+    $$SSSSCacheDataTableAnnotationComposer,
+    $$SSSSCacheDataTableCreateCompanionBuilder,
+    $$SSSSCacheDataTableUpdateCompanionBuilder,
+    (
+      SSSSCacheDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable,
+          SSSSCacheDataData>
+    ),
+    SSSSCacheDataData,
+    PrefetchHooks Function()> {
   $$SSSSCacheDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $SSSSCacheDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SSSSCacheDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SSSSCacheDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$SSSSCacheDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$SSSSCacheDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SSSSCacheDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SSSSCacheDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> type = const Value.absent(),
             Value<String> keyId = const Value.absent(),
             Value<String> cipherText = const Value.absent(),
@@ -7240,7 +7938,7 @@ class $$SSSSCacheDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String type,
             required String keyId,
             required String cipherText,
@@ -7254,70 +7952,30 @@ class $$SSSSCacheDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$SSSSCacheDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$SSSSCacheDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SSSSCacheDataTable,
     SSSSCacheDataData,
     $$SSSSCacheDataTableFilterComposer,
     $$SSSSCacheDataTableOrderingComposer,
-    $$SSSSCacheDataTableProcessedTableManager,
-    $$SSSSCacheDataTableInsertCompanionBuilder,
-    $$SSSSCacheDataTableUpdateCompanionBuilder> {
-  $$SSSSCacheDataTableProcessedTableManager(super.$state);
-}
-
-class $$SSSSCacheDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable> {
-  $$SSSSCacheDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get keyId => $state.composableBuilder(
-      column: $state.table.keyId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get cipherText => $state.composableBuilder(
-      column: $state.table.cipherText,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$SSSSCacheDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable> {
-  $$SSSSCacheDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get keyId => $state.composableBuilder(
-      column: $state.table.keyId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get cipherText => $state.composableBuilder(
-      column: $state.table.cipherText,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$OlmSessionDataTableInsertCompanionBuilder = OlmSessionDataCompanion
+    $$SSSSCacheDataTableAnnotationComposer,
+    $$SSSSCacheDataTableCreateCompanionBuilder,
+    $$SSSSCacheDataTableUpdateCompanionBuilder,
+    (
+      SSSSCacheDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SSSSCacheDataTable,
+          SSSSCacheDataData>
+    ),
+    SSSSCacheDataData,
+    PrefetchHooks Function()>;
+typedef $$OlmSessionDataTableCreateCompanionBuilder = OlmSessionDataCompanion
     Function({
   required String identityKey,
   required String sessionId,
@@ -7334,27 +7992,101 @@ typedef $$OlmSessionDataTableUpdateCompanionBuilder = OlmSessionDataCompanion
   Value<int> rowid,
 });
 
+class $$OlmSessionDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $OlmSessionDataTable> {
+  $$OlmSessionDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get identityKey => $composableBuilder(
+      column: $table.identityKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+      column: $table.sessionId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get lastReceived => $composableBuilder(
+      column: $table.lastReceived, builder: (column) => ColumnFilters(column));
+}
+
+class $$OlmSessionDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $OlmSessionDataTable> {
+  $$OlmSessionDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get identityKey => $composableBuilder(
+      column: $table.identityKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+      column: $table.sessionId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pickle => $composableBuilder(
+      column: $table.pickle, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get lastReceived => $composableBuilder(
+      column: $table.lastReceived,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$OlmSessionDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $OlmSessionDataTable> {
+  $$OlmSessionDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get identityKey => $composableBuilder(
+      column: $table.identityKey, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get pickle =>
+      $composableBuilder(column: $table.pickle, builder: (column) => column);
+
+  GeneratedColumn<int> get lastReceived => $composableBuilder(
+      column: $table.lastReceived, builder: (column) => column);
+}
+
 class $$OlmSessionDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $OlmSessionDataTable,
     OlmSessionDataData,
     $$OlmSessionDataTableFilterComposer,
     $$OlmSessionDataTableOrderingComposer,
-    $$OlmSessionDataTableProcessedTableManager,
-    $$OlmSessionDataTableInsertCompanionBuilder,
-    $$OlmSessionDataTableUpdateCompanionBuilder> {
+    $$OlmSessionDataTableAnnotationComposer,
+    $$OlmSessionDataTableCreateCompanionBuilder,
+    $$OlmSessionDataTableUpdateCompanionBuilder,
+    (
+      OlmSessionDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $OlmSessionDataTable,
+          OlmSessionDataData>
+    ),
+    OlmSessionDataData,
+    PrefetchHooks Function()> {
   $$OlmSessionDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $OlmSessionDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$OlmSessionDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$OlmSessionDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$OlmSessionDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$OlmSessionDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OlmSessionDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OlmSessionDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> identityKey = const Value.absent(),
             Value<String> sessionId = const Value.absent(),
             Value<String> pickle = const Value.absent(),
@@ -7368,7 +8100,7 @@ class $$OlmSessionDataTableTableManager extends RootTableManager<
             lastReceived: lastReceived,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String identityKey,
             required String sessionId,
             required String pickle,
@@ -7382,70 +8114,30 @@ class $$OlmSessionDataTableTableManager extends RootTableManager<
             lastReceived: lastReceived,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$OlmSessionDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$OlmSessionDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $OlmSessionDataTable,
     OlmSessionDataData,
     $$OlmSessionDataTableFilterComposer,
     $$OlmSessionDataTableOrderingComposer,
-    $$OlmSessionDataTableProcessedTableManager,
-    $$OlmSessionDataTableInsertCompanionBuilder,
-    $$OlmSessionDataTableUpdateCompanionBuilder> {
-  $$OlmSessionDataTableProcessedTableManager(super.$state);
-}
-
-class $$OlmSessionDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $OlmSessionDataTable> {
-  $$OlmSessionDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get identityKey => $state.composableBuilder(
-      column: $state.table.identityKey,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get sessionId => $state.composableBuilder(
-      column: $state.table.sessionId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get lastReceived => $state.composableBuilder(
-      column: $state.table.lastReceived,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$OlmSessionDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $OlmSessionDataTable> {
-  $$OlmSessionDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get identityKey => $state.composableBuilder(
-      column: $state.table.identityKey,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get sessionId => $state.composableBuilder(
-      column: $state.table.sessionId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get pickle => $state.composableBuilder(
-      column: $state.table.pickle,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get lastReceived => $state.composableBuilder(
-      column: $state.table.lastReceived,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$SeenDeviceIdTableInsertCompanionBuilder = SeenDeviceIdCompanion
+    $$OlmSessionDataTableAnnotationComposer,
+    $$OlmSessionDataTableCreateCompanionBuilder,
+    $$OlmSessionDataTableUpdateCompanionBuilder,
+    (
+      OlmSessionDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $OlmSessionDataTable,
+          OlmSessionDataData>
+    ),
+    OlmSessionDataData,
+    PrefetchHooks Function()>;
+typedef $$SeenDeviceIdTableCreateCompanionBuilder = SeenDeviceIdCompanion
     Function({
   required String userId,
   required String deviceId,
@@ -7460,27 +8152,91 @@ typedef $$SeenDeviceIdTableUpdateCompanionBuilder = SeenDeviceIdCompanion
   Value<int> rowid,
 });
 
+class $$SeenDeviceIdTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable> {
+  $$SeenDeviceIdTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get publicKeys => $composableBuilder(
+      column: $table.publicKeys, builder: (column) => ColumnFilters(column));
+}
+
+class $$SeenDeviceIdTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable> {
+  $$SeenDeviceIdTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get publicKeys => $composableBuilder(
+      column: $table.publicKeys, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SeenDeviceIdTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable> {
+  $$SeenDeviceIdTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<String> get publicKeys => $composableBuilder(
+      column: $table.publicKeys, builder: (column) => column);
+}
+
 class $$SeenDeviceIdTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SeenDeviceIdTable,
     SeenDeviceIdData,
     $$SeenDeviceIdTableFilterComposer,
     $$SeenDeviceIdTableOrderingComposer,
-    $$SeenDeviceIdTableProcessedTableManager,
-    $$SeenDeviceIdTableInsertCompanionBuilder,
-    $$SeenDeviceIdTableUpdateCompanionBuilder> {
+    $$SeenDeviceIdTableAnnotationComposer,
+    $$SeenDeviceIdTableCreateCompanionBuilder,
+    $$SeenDeviceIdTableUpdateCompanionBuilder,
+    (
+      SeenDeviceIdData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable,
+          SeenDeviceIdData>
+    ),
+    SeenDeviceIdData,
+    PrefetchHooks Function()> {
   $$SeenDeviceIdTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $SeenDeviceIdTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SeenDeviceIdTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SeenDeviceIdTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$SeenDeviceIdTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$SeenDeviceIdTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SeenDeviceIdTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SeenDeviceIdTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<String> deviceId = const Value.absent(),
             Value<String> publicKeys = const Value.absent(),
@@ -7492,7 +8248,7 @@ class $$SeenDeviceIdTableTableManager extends RootTableManager<
             publicKeys: publicKeys,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required String deviceId,
             required String publicKeys,
@@ -7504,60 +8260,30 @@ class $$SeenDeviceIdTableTableManager extends RootTableManager<
             publicKeys: publicKeys,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$SeenDeviceIdTableProcessedTableManager extends ProcessedTableManager<
+typedef $$SeenDeviceIdTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SeenDeviceIdTable,
     SeenDeviceIdData,
     $$SeenDeviceIdTableFilterComposer,
     $$SeenDeviceIdTableOrderingComposer,
-    $$SeenDeviceIdTableProcessedTableManager,
-    $$SeenDeviceIdTableInsertCompanionBuilder,
-    $$SeenDeviceIdTableUpdateCompanionBuilder> {
-  $$SeenDeviceIdTableProcessedTableManager(super.$state);
-}
-
-class $$SeenDeviceIdTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable> {
-  $$SeenDeviceIdTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get publicKeys => $state.composableBuilder(
-      column: $state.table.publicKeys,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$SeenDeviceIdTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable> {
-  $$SeenDeviceIdTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get publicKeys => $state.composableBuilder(
-      column: $state.table.publicKeys,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$SeenPublicKeyTableInsertCompanionBuilder = SeenPublicKeyCompanion
+    $$SeenDeviceIdTableAnnotationComposer,
+    $$SeenDeviceIdTableCreateCompanionBuilder,
+    $$SeenDeviceIdTableUpdateCompanionBuilder,
+    (
+      SeenDeviceIdData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SeenDeviceIdTable,
+          SeenDeviceIdData>
+    ),
+    SeenDeviceIdData,
+    PrefetchHooks Function()>;
+typedef $$SeenPublicKeyTableCreateCompanionBuilder = SeenPublicKeyCompanion
     Function({
   required String publicKey,
   required String deviceId,
@@ -7570,27 +8296,82 @@ typedef $$SeenPublicKeyTableUpdateCompanionBuilder = SeenPublicKeyCompanion
   Value<int> rowid,
 });
 
+class $$SeenPublicKeyTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable> {
+  $$SeenPublicKeyTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnFilters(column));
+}
+
+class $$SeenPublicKeyTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable> {
+  $$SeenPublicKeyTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SeenPublicKeyTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable> {
+  $$SeenPublicKeyTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get publicKey =>
+      $composableBuilder(column: $table.publicKey, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+}
+
 class $$SeenPublicKeyTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SeenPublicKeyTable,
     SeenPublicKeyData,
     $$SeenPublicKeyTableFilterComposer,
     $$SeenPublicKeyTableOrderingComposer,
-    $$SeenPublicKeyTableProcessedTableManager,
-    $$SeenPublicKeyTableInsertCompanionBuilder,
-    $$SeenPublicKeyTableUpdateCompanionBuilder> {
+    $$SeenPublicKeyTableAnnotationComposer,
+    $$SeenPublicKeyTableCreateCompanionBuilder,
+    $$SeenPublicKeyTableUpdateCompanionBuilder,
+    (
+      SeenPublicKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable,
+          SeenPublicKeyData>
+    ),
+    SeenPublicKeyData,
+    PrefetchHooks Function()> {
   $$SeenPublicKeyTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $SeenPublicKeyTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SeenPublicKeyTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SeenPublicKeyTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$SeenPublicKeyTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$SeenPublicKeyTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SeenPublicKeyTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SeenPublicKeyTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> publicKey = const Value.absent(),
             Value<String> deviceId = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -7600,7 +8381,7 @@ class $$SeenPublicKeyTableTableManager extends RootTableManager<
             deviceId: deviceId,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String publicKey,
             required String deviceId,
             Value<int> rowid = const Value.absent(),
@@ -7610,50 +8391,30 @@ class $$SeenPublicKeyTableTableManager extends RootTableManager<
             deviceId: deviceId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$SeenPublicKeyTableProcessedTableManager extends ProcessedTableManager<
+typedef $$SeenPublicKeyTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $SeenPublicKeyTable,
     SeenPublicKeyData,
     $$SeenPublicKeyTableFilterComposer,
     $$SeenPublicKeyTableOrderingComposer,
-    $$SeenPublicKeyTableProcessedTableManager,
-    $$SeenPublicKeyTableInsertCompanionBuilder,
-    $$SeenPublicKeyTableUpdateCompanionBuilder> {
-  $$SeenPublicKeyTableProcessedTableManager(super.$state);
-}
-
-class $$SeenPublicKeyTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable> {
-  $$SeenPublicKeyTableFilterComposer(super.$state);
-  ColumnFilters<String> get publicKey => $state.composableBuilder(
-      column: $state.table.publicKey,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$SeenPublicKeyTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable> {
-  $$SeenPublicKeyTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get publicKey => $state.composableBuilder(
-      column: $state.table.publicKey,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$UserDeviceKeyTableInsertCompanionBuilder = UserDeviceKeyCompanion
+    $$SeenPublicKeyTableAnnotationComposer,
+    $$SeenPublicKeyTableCreateCompanionBuilder,
+    $$SeenPublicKeyTableUpdateCompanionBuilder,
+    (
+      SeenPublicKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $SeenPublicKeyTable,
+          SeenPublicKeyData>
+    ),
+    SeenPublicKeyData,
+    PrefetchHooks Function()>;
+typedef $$UserDeviceKeyTableCreateCompanionBuilder = UserDeviceKeyCompanion
     Function({
   required String userId,
   required String deviceId,
@@ -7676,27 +8437,129 @@ typedef $$UserDeviceKeyTableUpdateCompanionBuilder = UserDeviceKeyCompanion
   Value<int> rowid,
 });
 
+class $$UserDeviceKeyTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable> {
+  $$UserDeviceKeyTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastSentMessage => $composableBuilder(
+      column: $table.lastSentMessage,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get verified => $composableBuilder(
+      column: $table.verified, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get blocked => $composableBuilder(
+      column: $table.blocked, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get lastActive => $composableBuilder(
+      column: $table.lastActive, builder: (column) => ColumnFilters(column));
+}
+
+class $$UserDeviceKeyTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable> {
+  $$UserDeviceKeyTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+      column: $table.deviceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastSentMessage => $composableBuilder(
+      column: $table.lastSentMessage,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get verified => $composableBuilder(
+      column: $table.verified, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get blocked => $composableBuilder(
+      column: $table.blocked, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get lastActive => $composableBuilder(
+      column: $table.lastActive, builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserDeviceKeyTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable> {
+  $$UserDeviceKeyTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSentMessage => $composableBuilder(
+      column: $table.lastSentMessage, builder: (column) => column);
+
+  GeneratedColumn<bool> get verified =>
+      $composableBuilder(column: $table.verified, builder: (column) => column);
+
+  GeneratedColumn<bool> get blocked =>
+      $composableBuilder(column: $table.blocked, builder: (column) => column);
+
+  GeneratedColumn<int> get lastActive => $composableBuilder(
+      column: $table.lastActive, builder: (column) => column);
+}
+
 class $$UserDeviceKeyTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $UserDeviceKeyTable,
     UserDeviceKeyData,
     $$UserDeviceKeyTableFilterComposer,
     $$UserDeviceKeyTableOrderingComposer,
-    $$UserDeviceKeyTableProcessedTableManager,
-    $$UserDeviceKeyTableInsertCompanionBuilder,
-    $$UserDeviceKeyTableUpdateCompanionBuilder> {
+    $$UserDeviceKeyTableAnnotationComposer,
+    $$UserDeviceKeyTableCreateCompanionBuilder,
+    $$UserDeviceKeyTableUpdateCompanionBuilder,
+    (
+      UserDeviceKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable,
+          UserDeviceKeyData>
+    ),
+    UserDeviceKeyData,
+    PrefetchHooks Function()> {
   $$UserDeviceKeyTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $UserDeviceKeyTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$UserDeviceKeyTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$UserDeviceKeyTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$UserDeviceKeyTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$UserDeviceKeyTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserDeviceKeyTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserDeviceKeyTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<String> deviceId = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -7716,7 +8579,7 @@ class $$UserDeviceKeyTableTableManager extends RootTableManager<
             lastActive: lastActive,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required String deviceId,
             required String content,
@@ -7736,100 +8599,30 @@ class $$UserDeviceKeyTableTableManager extends RootTableManager<
             lastActive: lastActive,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$UserDeviceKeyTableProcessedTableManager extends ProcessedTableManager<
+typedef $$UserDeviceKeyTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $UserDeviceKeyTable,
     UserDeviceKeyData,
     $$UserDeviceKeyTableFilterComposer,
     $$UserDeviceKeyTableOrderingComposer,
-    $$UserDeviceKeyTableProcessedTableManager,
-    $$UserDeviceKeyTableInsertCompanionBuilder,
-    $$UserDeviceKeyTableUpdateCompanionBuilder> {
-  $$UserDeviceKeyTableProcessedTableManager(super.$state);
-}
-
-class $$UserDeviceKeyTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable> {
-  $$UserDeviceKeyTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastSentMessage => $state.composableBuilder(
-      column: $state.table.lastSentMessage,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get verified => $state.composableBuilder(
-      column: $state.table.verified,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get blocked => $state.composableBuilder(
-      column: $state.table.blocked,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get lastActive => $state.composableBuilder(
-      column: $state.table.lastActive,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$UserDeviceKeyTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable> {
-  $$UserDeviceKeyTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceId => $state.composableBuilder(
-      column: $state.table.deviceId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastSentMessage => $state.composableBuilder(
-      column: $state.table.lastSentMessage,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get verified => $state.composableBuilder(
-      column: $state.table.verified,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get blocked => $state.composableBuilder(
-      column: $state.table.blocked,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get lastActive => $state.composableBuilder(
-      column: $state.table.lastActive,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$UserDeviceKeyInfoTableInsertCompanionBuilder
+    $$UserDeviceKeyTableAnnotationComposer,
+    $$UserDeviceKeyTableCreateCompanionBuilder,
+    $$UserDeviceKeyTableUpdateCompanionBuilder,
+    (
+      UserDeviceKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyTable,
+          UserDeviceKeyData>
+    ),
+    UserDeviceKeyData,
+    PrefetchHooks Function()>;
+typedef $$UserDeviceKeyInfoTableCreateCompanionBuilder
     = UserDeviceKeyInfoCompanion Function({
   required String userId,
   required bool outdated,
@@ -7842,27 +8635,83 @@ typedef $$UserDeviceKeyInfoTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$UserDeviceKeyInfoTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable> {
+  $$UserDeviceKeyInfoTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get outdated => $composableBuilder(
+      column: $table.outdated, builder: (column) => ColumnFilters(column));
+}
+
+class $$UserDeviceKeyInfoTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable> {
+  $$UserDeviceKeyInfoTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get outdated => $composableBuilder(
+      column: $table.outdated, builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserDeviceKeyInfoTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable> {
+  $$UserDeviceKeyInfoTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<bool> get outdated =>
+      $composableBuilder(column: $table.outdated, builder: (column) => column);
+}
+
 class $$UserDeviceKeyInfoTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $UserDeviceKeyInfoTable,
     UserDeviceKeyInfoData,
     $$UserDeviceKeyInfoTableFilterComposer,
     $$UserDeviceKeyInfoTableOrderingComposer,
-    $$UserDeviceKeyInfoTableProcessedTableManager,
-    $$UserDeviceKeyInfoTableInsertCompanionBuilder,
-    $$UserDeviceKeyInfoTableUpdateCompanionBuilder> {
+    $$UserDeviceKeyInfoTableAnnotationComposer,
+    $$UserDeviceKeyInfoTableCreateCompanionBuilder,
+    $$UserDeviceKeyInfoTableUpdateCompanionBuilder,
+    (
+      UserDeviceKeyInfoData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable,
+          UserDeviceKeyInfoData>
+    ),
+    UserDeviceKeyInfoData,
+    PrefetchHooks Function()> {
   $$UserDeviceKeyInfoTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $UserDeviceKeyInfoTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$UserDeviceKeyInfoTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$UserDeviceKeyInfoTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$UserDeviceKeyInfoTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$UserDeviceKeyInfoTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserDeviceKeyInfoTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserDeviceKeyInfoTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<bool> outdated = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -7872,7 +8721,7 @@ class $$UserDeviceKeyInfoTableTableManager extends RootTableManager<
             outdated: outdated,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required bool outdated,
             Value<int> rowid = const Value.absent(),
@@ -7882,51 +8731,30 @@ class $$UserDeviceKeyInfoTableTableManager extends RootTableManager<
             outdated: outdated,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$UserDeviceKeyInfoTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $UserDeviceKeyInfoTable,
-        UserDeviceKeyInfoData,
-        $$UserDeviceKeyInfoTableFilterComposer,
-        $$UserDeviceKeyInfoTableOrderingComposer,
-        $$UserDeviceKeyInfoTableProcessedTableManager,
-        $$UserDeviceKeyInfoTableInsertCompanionBuilder,
-        $$UserDeviceKeyInfoTableUpdateCompanionBuilder> {
-  $$UserDeviceKeyInfoTableProcessedTableManager(super.$state);
-}
-
-class $$UserDeviceKeyInfoTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable> {
-  $$UserDeviceKeyInfoTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get outdated => $state.composableBuilder(
-      column: $state.table.outdated,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$UserDeviceKeyInfoTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable> {
-  $$UserDeviceKeyInfoTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get outdated => $state.composableBuilder(
-      column: $state.table.outdated,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$UserCrossSigningKeyTableInsertCompanionBuilder
+typedef $$UserDeviceKeyInfoTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $UserDeviceKeyInfoTable,
+    UserDeviceKeyInfoData,
+    $$UserDeviceKeyInfoTableFilterComposer,
+    $$UserDeviceKeyInfoTableOrderingComposer,
+    $$UserDeviceKeyInfoTableAnnotationComposer,
+    $$UserDeviceKeyInfoTableCreateCompanionBuilder,
+    $$UserDeviceKeyInfoTableUpdateCompanionBuilder,
+    (
+      UserDeviceKeyInfoData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $UserDeviceKeyInfoTable,
+          UserDeviceKeyInfoData>
+    ),
+    UserDeviceKeyInfoData,
+    PrefetchHooks Function()>;
+typedef $$UserCrossSigningKeyTableCreateCompanionBuilder
     = UserCrossSigningKeyCompanion Function({
   required String userId,
   required String publicKey,
@@ -7945,27 +8773,111 @@ typedef $$UserCrossSigningKeyTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$UserCrossSigningKeyTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserCrossSigningKeyTable> {
+  $$UserCrossSigningKeyTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get verified => $composableBuilder(
+      column: $table.verified, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get blocked => $composableBuilder(
+      column: $table.blocked, builder: (column) => ColumnFilters(column));
+}
+
+class $$UserCrossSigningKeyTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserCrossSigningKeyTable> {
+  $$UserCrossSigningKeyTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get publicKey => $composableBuilder(
+      column: $table.publicKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get verified => $composableBuilder(
+      column: $table.verified, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get blocked => $composableBuilder(
+      column: $table.blocked, builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserCrossSigningKeyTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $UserCrossSigningKeyTable> {
+  $$UserCrossSigningKeyTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get publicKey =>
+      $composableBuilder(column: $table.publicKey, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<bool> get verified =>
+      $composableBuilder(column: $table.verified, builder: (column) => column);
+
+  GeneratedColumn<bool> get blocked =>
+      $composableBuilder(column: $table.blocked, builder: (column) => column);
+}
+
 class $$UserCrossSigningKeyTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $UserCrossSigningKeyTable,
     UserCrossSigningKeyData,
     $$UserCrossSigningKeyTableFilterComposer,
     $$UserCrossSigningKeyTableOrderingComposer,
-    $$UserCrossSigningKeyTableProcessedTableManager,
-    $$UserCrossSigningKeyTableInsertCompanionBuilder,
-    $$UserCrossSigningKeyTableUpdateCompanionBuilder> {
+    $$UserCrossSigningKeyTableAnnotationComposer,
+    $$UserCrossSigningKeyTableCreateCompanionBuilder,
+    $$UserCrossSigningKeyTableUpdateCompanionBuilder,
+    (
+      UserCrossSigningKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $UserCrossSigningKeyTable, UserCrossSigningKeyData>
+    ),
+    UserCrossSigningKeyData,
+    PrefetchHooks Function()> {
   $$UserCrossSigningKeyTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $UserCrossSigningKeyTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$UserCrossSigningKeyTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$UserCrossSigningKeyTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$UserCrossSigningKeyTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$UserCrossSigningKeyTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserCrossSigningKeyTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserCrossSigningKeyTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<String> publicKey = const Value.absent(),
             Value<String?> content = const Value.absent(),
@@ -7981,7 +8893,7 @@ class $$UserCrossSigningKeyTableTableManager extends RootTableManager<
             blocked: blocked,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required String publicKey,
             Value<String?> content = const Value.absent(),
@@ -7997,81 +8909,30 @@ class $$UserCrossSigningKeyTableTableManager extends RootTableManager<
             blocked: blocked,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$UserCrossSigningKeyTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $UserCrossSigningKeyTable,
-        UserCrossSigningKeyData,
-        $$UserCrossSigningKeyTableFilterComposer,
-        $$UserCrossSigningKeyTableOrderingComposer,
-        $$UserCrossSigningKeyTableProcessedTableManager,
-        $$UserCrossSigningKeyTableInsertCompanionBuilder,
-        $$UserCrossSigningKeyTableUpdateCompanionBuilder> {
-  $$UserCrossSigningKeyTableProcessedTableManager(super.$state);
-}
-
-class $$UserCrossSigningKeyTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $UserCrossSigningKeyTable> {
-  $$UserCrossSigningKeyTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get publicKey => $state.composableBuilder(
-      column: $state.table.publicKey,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get verified => $state.composableBuilder(
-      column: $state.table.verified,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get blocked => $state.composableBuilder(
-      column: $state.table.blocked,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$UserCrossSigningKeyTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $UserCrossSigningKeyTable> {
-  $$UserCrossSigningKeyTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get publicKey => $state.composableBuilder(
-      column: $state.table.publicKey,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get verified => $state.composableBuilder(
-      column: $state.table.verified,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get blocked => $state.composableBuilder(
-      column: $state.table.blocked,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$PresenceDataTableInsertCompanionBuilder = PresenceDataCompanion
+typedef $$UserCrossSigningKeyTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $UserCrossSigningKeyTable,
+    UserCrossSigningKeyData,
+    $$UserCrossSigningKeyTableFilterComposer,
+    $$UserCrossSigningKeyTableOrderingComposer,
+    $$UserCrossSigningKeyTableAnnotationComposer,
+    $$UserCrossSigningKeyTableCreateCompanionBuilder,
+    $$UserCrossSigningKeyTableUpdateCompanionBuilder,
+    (
+      UserCrossSigningKeyData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $UserCrossSigningKeyTable, UserCrossSigningKeyData>
+    ),
+    UserCrossSigningKeyData,
+    PrefetchHooks Function()>;
+typedef $$PresenceDataTableCreateCompanionBuilder = PresenceDataCompanion
     Function({
   required String userId,
   required String presence,
@@ -8084,27 +8945,82 @@ typedef $$PresenceDataTableUpdateCompanionBuilder = PresenceDataCompanion
   Value<int> rowid,
 });
 
+class $$PresenceDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PresenceDataTable> {
+  $$PresenceDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get presence => $composableBuilder(
+      column: $table.presence, builder: (column) => ColumnFilters(column));
+}
+
+class $$PresenceDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PresenceDataTable> {
+  $$PresenceDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get presence => $composableBuilder(
+      column: $table.presence, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PresenceDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $PresenceDataTable> {
+  $$PresenceDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get presence =>
+      $composableBuilder(column: $table.presence, builder: (column) => column);
+}
+
 class $$PresenceDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $PresenceDataTable,
     PresenceDataData,
     $$PresenceDataTableFilterComposer,
     $$PresenceDataTableOrderingComposer,
-    $$PresenceDataTableProcessedTableManager,
-    $$PresenceDataTableInsertCompanionBuilder,
-    $$PresenceDataTableUpdateCompanionBuilder> {
+    $$PresenceDataTableAnnotationComposer,
+    $$PresenceDataTableCreateCompanionBuilder,
+    $$PresenceDataTableUpdateCompanionBuilder,
+    (
+      PresenceDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $PresenceDataTable,
+          PresenceDataData>
+    ),
+    PresenceDataData,
+    PrefetchHooks Function()> {
   $$PresenceDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $PresenceDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PresenceDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PresenceDataTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$PresenceDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$PresenceDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PresenceDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PresenceDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<String> presence = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -8114,7 +9030,7 @@ class $$PresenceDataTableTableManager extends RootTableManager<
             presence: presence,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required String presence,
             Value<int> rowid = const Value.absent(),
@@ -8124,50 +9040,30 @@ class $$PresenceDataTableTableManager extends RootTableManager<
             presence: presence,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PresenceDataTableProcessedTableManager extends ProcessedTableManager<
+typedef $$PresenceDataTableProcessedTableManager = ProcessedTableManager<
     _$MatrixSdkDriftDBImplementation,
     $PresenceDataTable,
     PresenceDataData,
     $$PresenceDataTableFilterComposer,
     $$PresenceDataTableOrderingComposer,
-    $$PresenceDataTableProcessedTableManager,
-    $$PresenceDataTableInsertCompanionBuilder,
-    $$PresenceDataTableUpdateCompanionBuilder> {
-  $$PresenceDataTableProcessedTableManager(super.$state);
-}
-
-class $$PresenceDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $PresenceDataTable> {
-  $$PresenceDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get presence => $state.composableBuilder(
-      column: $state.table.presence,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PresenceDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $PresenceDataTable> {
-  $$PresenceDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get presence => $state.composableBuilder(
-      column: $state.table.presence,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$CachedProfileDataTableInsertCompanionBuilder
+    $$PresenceDataTableAnnotationComposer,
+    $$PresenceDataTableCreateCompanionBuilder,
+    $$PresenceDataTableUpdateCompanionBuilder,
+    (
+      PresenceDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $PresenceDataTable,
+          PresenceDataData>
+    ),
+    PresenceDataData,
+    PrefetchHooks Function()>;
+typedef $$CachedProfileDataTableCreateCompanionBuilder
     = CachedProfileDataCompanion Function({
   required String userId,
   required String content,
@@ -8180,27 +9076,83 @@ typedef $$CachedProfileDataTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$CachedProfileDataTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
+  $$CachedProfileDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$CachedProfileDataTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
+  $$CachedProfileDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CachedProfileDataTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
+  $$CachedProfileDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$CachedProfileDataTableTableManager extends RootTableManager<
     _$MatrixSdkDriftDBImplementation,
     $CachedProfileDataTable,
     CachedProfileDataData,
     $$CachedProfileDataTableFilterComposer,
     $$CachedProfileDataTableOrderingComposer,
-    $$CachedProfileDataTableProcessedTableManager,
-    $$CachedProfileDataTableInsertCompanionBuilder,
-    $$CachedProfileDataTableUpdateCompanionBuilder> {
+    $$CachedProfileDataTableAnnotationComposer,
+    $$CachedProfileDataTableCreateCompanionBuilder,
+    $$CachedProfileDataTableUpdateCompanionBuilder,
+    (
+      CachedProfileDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $CachedProfileDataTable,
+          CachedProfileDataData>
+    ),
+    CachedProfileDataData,
+    PrefetchHooks Function()> {
   $$CachedProfileDataTableTableManager(
       _$MatrixSdkDriftDBImplementation db, $CachedProfileDataTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$CachedProfileDataTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$CachedProfileDataTableOrderingComposer(
-              ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$CachedProfileDataTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
+          createFilteringComposer: () =>
+              $$CachedProfileDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedProfileDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedProfileDataTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
             Value<String> userId = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<int> rowid = const Value.absent(),
@@ -8210,7 +9162,7 @@ class $$CachedProfileDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
-          getInsertCompanionBuilder: ({
+          createCompanionCallback: ({
             required String userId,
             required String content,
             Value<int> rowid = const Value.absent(),
@@ -8220,53 +9172,33 @@ class $$CachedProfileDataTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$CachedProfileDataTableProcessedTableManager
-    extends ProcessedTableManager<
-        _$MatrixSdkDriftDBImplementation,
-        $CachedProfileDataTable,
-        CachedProfileDataData,
-        $$CachedProfileDataTableFilterComposer,
-        $$CachedProfileDataTableOrderingComposer,
-        $$CachedProfileDataTableProcessedTableManager,
-        $$CachedProfileDataTableInsertCompanionBuilder,
-        $$CachedProfileDataTableUpdateCompanionBuilder> {
-  $$CachedProfileDataTableProcessedTableManager(super.$state);
-}
+typedef $$CachedProfileDataTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $CachedProfileDataTable,
+    CachedProfileDataData,
+    $$CachedProfileDataTableFilterComposer,
+    $$CachedProfileDataTableOrderingComposer,
+    $$CachedProfileDataTableAnnotationComposer,
+    $$CachedProfileDataTableCreateCompanionBuilder,
+    $$CachedProfileDataTableUpdateCompanionBuilder,
+    (
+      CachedProfileDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $CachedProfileDataTable,
+          CachedProfileDataData>
+    ),
+    CachedProfileDataData,
+    PrefetchHooks Function()>;
 
-class $$CachedProfileDataTableFilterComposer extends FilterComposer<
-    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
-  $$CachedProfileDataTableFilterComposer(super.$state);
-  ColumnFilters<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$CachedProfileDataTableOrderingComposer extends OrderingComposer<
-    _$MatrixSdkDriftDBImplementation, $CachedProfileDataTable> {
-  $$CachedProfileDataTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get userId => $state.composableBuilder(
-      column: $state.table.userId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-class _$MatrixSdkDriftDBImplementationManager {
+class $MatrixSdkDriftDBImplementationManager {
   final _$MatrixSdkDriftDBImplementation _db;
-  _$MatrixSdkDriftDBImplementationManager(this._db);
+  $MatrixSdkDriftDBImplementationManager(this._db);
   $$ClientDataTableTableManager get clientData =>
       $$ClientDataTableTableManager(_db, _db.clientData);
   $$ToDeviceQueueTableTableManager get toDeviceQueue =>
