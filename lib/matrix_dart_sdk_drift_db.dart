@@ -635,11 +635,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         () async {
       var states = await (db.select(db.nonPreloadRoomState)
             ..where(
-                (tbl) => tbl.roomId.equals(room.id) & tbl.type.isIn(events)))
+                (tbl) => tbl.roomId.equals(room.id) & tbl.type.isNotIn(events)))
           .get();
 
       return states
-          .map((e) => Event.fromJson(jsonDecode(e.content), room))
+          .map((e) => Event.fromJson(jsonDecode(e.content)[''], room))
           .toList();
     });
   }
