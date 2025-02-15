@@ -1203,13 +1203,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
           await db.transaction(() async {
             if (client.importantStateEvents.contains(type)) {
-              var prev = await (db.select(db.preloadRoomState)
-                    ..where((tbl) =>
-                        tbl.roomId.equals(eventUpdate.roomID) &
-                        tbl.type.equals(type))
-                    ..limit(1))
-                  .getSingleOrNull();
-
               var content = eventUpdate.content;
               await db.into(db.preloadRoomState).insertOnConflictUpdate(
                   PreloadRoomStateCompanion.insert(
@@ -1218,13 +1211,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                       stateKey: stateKey,
                       content: jsonEncode(content)));
             } else {
-              var prev = await (db.select(db.nonPreloadRoomState)
-                    ..where((tbl) =>
-                        tbl.roomId.equals(eventUpdate.roomID) &
-                        tbl.type.equals(type))
-                    ..limit(1))
-                  .getSingleOrNull();
-
               var content = eventUpdate.content;
               await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                   NonPreloadRoomStateCompanion.insert(
