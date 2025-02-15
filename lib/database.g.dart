@@ -1305,6 +1305,12 @@ class $PreloadRoomStateTable extends PreloadRoomState
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
       'type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _stateKeyMeta =
+      const VerificationMeta('stateKey');
+  @override
+  late final GeneratedColumn<String> stateKey = GeneratedColumn<String>(
+      'state_key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _contentMeta =
       const VerificationMeta('content');
   @override
@@ -1312,7 +1318,7 @@ class $PreloadRoomStateTable extends PreloadRoomState
       'content', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [roomId, type, content];
+  List<GeneratedColumn> get $columns => [roomId, type, stateKey, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1336,6 +1342,12 @@ class $PreloadRoomStateTable extends PreloadRoomState
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
+    if (data.containsKey('state_key')) {
+      context.handle(_stateKeyMeta,
+          stateKey.isAcceptableOrUnknown(data['state_key']!, _stateKeyMeta));
+    } else if (isInserting) {
+      context.missing(_stateKeyMeta);
+    }
     if (data.containsKey('content')) {
       context.handle(_contentMeta,
           content.isAcceptableOrUnknown(data['content']!, _contentMeta));
@@ -1346,7 +1358,7 @@ class $PreloadRoomStateTable extends PreloadRoomState
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {roomId, type};
+  Set<GeneratedColumn> get $primaryKey => {roomId, type, stateKey};
   @override
   PreloadRoomStateData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -1355,6 +1367,8 @@ class $PreloadRoomStateTable extends PreloadRoomState
           .read(DriftSqlType.string, data['${effectivePrefix}room_id'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      stateKey: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state_key'])!,
       content: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
     );
@@ -1370,14 +1384,19 @@ class PreloadRoomStateData extends DataClass
     implements Insertable<PreloadRoomStateData> {
   final String roomId;
   final String type;
+  final String stateKey;
   final String content;
   const PreloadRoomStateData(
-      {required this.roomId, required this.type, required this.content});
+      {required this.roomId,
+      required this.type,
+      required this.stateKey,
+      required this.content});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['room_id'] = Variable<String>(roomId);
     map['type'] = Variable<String>(type);
+    map['state_key'] = Variable<String>(stateKey);
     map['content'] = Variable<String>(content);
     return map;
   }
@@ -1386,6 +1405,7 @@ class PreloadRoomStateData extends DataClass
     return PreloadRoomStateCompanion(
       roomId: Value(roomId),
       type: Value(type),
+      stateKey: Value(stateKey),
       content: Value(content),
     );
   }
@@ -1396,6 +1416,7 @@ class PreloadRoomStateData extends DataClass
     return PreloadRoomStateData(
       roomId: serializer.fromJson<String>(json['roomId']),
       type: serializer.fromJson<String>(json['type']),
+      stateKey: serializer.fromJson<String>(json['stateKey']),
       content: serializer.fromJson<String>(json['content']),
     );
   }
@@ -1405,21 +1426,24 @@ class PreloadRoomStateData extends DataClass
     return <String, dynamic>{
       'roomId': serializer.toJson<String>(roomId),
       'type': serializer.toJson<String>(type),
+      'stateKey': serializer.toJson<String>(stateKey),
       'content': serializer.toJson<String>(content),
     };
   }
 
   PreloadRoomStateData copyWith(
-          {String? roomId, String? type, String? content}) =>
+          {String? roomId, String? type, String? stateKey, String? content}) =>
       PreloadRoomStateData(
         roomId: roomId ?? this.roomId,
         type: type ?? this.type,
+        stateKey: stateKey ?? this.stateKey,
         content: content ?? this.content,
       );
   PreloadRoomStateData copyWithCompanion(PreloadRoomStateCompanion data) {
     return PreloadRoomStateData(
       roomId: data.roomId.present ? data.roomId.value : this.roomId,
       type: data.type.present ? data.type.value : this.type,
+      stateKey: data.stateKey.present ? data.stateKey.value : this.stateKey,
       content: data.content.present ? data.content.value : this.content,
     );
   }
@@ -1429,50 +1453,58 @@ class PreloadRoomStateData extends DataClass
     return (StringBuffer('PreloadRoomStateData(')
           ..write('roomId: $roomId, ')
           ..write('type: $type, ')
+          ..write('stateKey: $stateKey, ')
           ..write('content: $content')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(roomId, type, content);
+  int get hashCode => Object.hash(roomId, type, stateKey, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PreloadRoomStateData &&
           other.roomId == this.roomId &&
           other.type == this.type &&
+          other.stateKey == this.stateKey &&
           other.content == this.content);
 }
 
 class PreloadRoomStateCompanion extends UpdateCompanion<PreloadRoomStateData> {
   final Value<String> roomId;
   final Value<String> type;
+  final Value<String> stateKey;
   final Value<String> content;
   final Value<int> rowid;
   const PreloadRoomStateCompanion({
     this.roomId = const Value.absent(),
     this.type = const Value.absent(),
+    this.stateKey = const Value.absent(),
     this.content = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PreloadRoomStateCompanion.insert({
     required String roomId,
     required String type,
+    required String stateKey,
     required String content,
     this.rowid = const Value.absent(),
   })  : roomId = Value(roomId),
         type = Value(type),
+        stateKey = Value(stateKey),
         content = Value(content);
   static Insertable<PreloadRoomStateData> custom({
     Expression<String>? roomId,
     Expression<String>? type,
+    Expression<String>? stateKey,
     Expression<String>? content,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (roomId != null) 'room_id': roomId,
       if (type != null) 'type': type,
+      if (stateKey != null) 'state_key': stateKey,
       if (content != null) 'content': content,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1481,11 +1513,13 @@ class PreloadRoomStateCompanion extends UpdateCompanion<PreloadRoomStateData> {
   PreloadRoomStateCompanion copyWith(
       {Value<String>? roomId,
       Value<String>? type,
+      Value<String>? stateKey,
       Value<String>? content,
       Value<int>? rowid}) {
     return PreloadRoomStateCompanion(
       roomId: roomId ?? this.roomId,
       type: type ?? this.type,
+      stateKey: stateKey ?? this.stateKey,
       content: content ?? this.content,
       rowid: rowid ?? this.rowid,
     );
@@ -1499,6 +1533,9 @@ class PreloadRoomStateCompanion extends UpdateCompanion<PreloadRoomStateData> {
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
+    }
+    if (stateKey.present) {
+      map['state_key'] = Variable<String>(stateKey.value);
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
@@ -1514,6 +1551,7 @@ class PreloadRoomStateCompanion extends UpdateCompanion<PreloadRoomStateData> {
     return (StringBuffer('PreloadRoomStateCompanion(')
           ..write('roomId: $roomId, ')
           ..write('type: $type, ')
+          ..write('stateKey: $stateKey, ')
           ..write('content: $content, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1537,6 +1575,12 @@ class $NonPreloadRoomStateTable extends NonPreloadRoomState
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
       'type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _stateKeyMeta =
+      const VerificationMeta('stateKey');
+  @override
+  late final GeneratedColumn<String> stateKey = GeneratedColumn<String>(
+      'state_key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _contentMeta =
       const VerificationMeta('content');
   @override
@@ -1544,7 +1588,7 @@ class $NonPreloadRoomStateTable extends NonPreloadRoomState
       'content', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [roomId, type, content];
+  List<GeneratedColumn> get $columns => [roomId, type, stateKey, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1568,6 +1612,12 @@ class $NonPreloadRoomStateTable extends NonPreloadRoomState
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
+    if (data.containsKey('state_key')) {
+      context.handle(_stateKeyMeta,
+          stateKey.isAcceptableOrUnknown(data['state_key']!, _stateKeyMeta));
+    } else if (isInserting) {
+      context.missing(_stateKeyMeta);
+    }
     if (data.containsKey('content')) {
       context.handle(_contentMeta,
           content.isAcceptableOrUnknown(data['content']!, _contentMeta));
@@ -1578,7 +1628,7 @@ class $NonPreloadRoomStateTable extends NonPreloadRoomState
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {roomId, type};
+  Set<GeneratedColumn> get $primaryKey => {roomId, type, stateKey};
   @override
   NonPreloadRoomStateData map(Map<String, dynamic> data,
       {String? tablePrefix}) {
@@ -1588,6 +1638,8 @@ class $NonPreloadRoomStateTable extends NonPreloadRoomState
           .read(DriftSqlType.string, data['${effectivePrefix}room_id'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      stateKey: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state_key'])!,
       content: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
     );
@@ -1603,14 +1655,19 @@ class NonPreloadRoomStateData extends DataClass
     implements Insertable<NonPreloadRoomStateData> {
   final String roomId;
   final String type;
+  final String stateKey;
   final String content;
   const NonPreloadRoomStateData(
-      {required this.roomId, required this.type, required this.content});
+      {required this.roomId,
+      required this.type,
+      required this.stateKey,
+      required this.content});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['room_id'] = Variable<String>(roomId);
     map['type'] = Variable<String>(type);
+    map['state_key'] = Variable<String>(stateKey);
     map['content'] = Variable<String>(content);
     return map;
   }
@@ -1619,6 +1676,7 @@ class NonPreloadRoomStateData extends DataClass
     return NonPreloadRoomStateCompanion(
       roomId: Value(roomId),
       type: Value(type),
+      stateKey: Value(stateKey),
       content: Value(content),
     );
   }
@@ -1629,6 +1687,7 @@ class NonPreloadRoomStateData extends DataClass
     return NonPreloadRoomStateData(
       roomId: serializer.fromJson<String>(json['roomId']),
       type: serializer.fromJson<String>(json['type']),
+      stateKey: serializer.fromJson<String>(json['stateKey']),
       content: serializer.fromJson<String>(json['content']),
     );
   }
@@ -1638,21 +1697,24 @@ class NonPreloadRoomStateData extends DataClass
     return <String, dynamic>{
       'roomId': serializer.toJson<String>(roomId),
       'type': serializer.toJson<String>(type),
+      'stateKey': serializer.toJson<String>(stateKey),
       'content': serializer.toJson<String>(content),
     };
   }
 
   NonPreloadRoomStateData copyWith(
-          {String? roomId, String? type, String? content}) =>
+          {String? roomId, String? type, String? stateKey, String? content}) =>
       NonPreloadRoomStateData(
         roomId: roomId ?? this.roomId,
         type: type ?? this.type,
+        stateKey: stateKey ?? this.stateKey,
         content: content ?? this.content,
       );
   NonPreloadRoomStateData copyWithCompanion(NonPreloadRoomStateCompanion data) {
     return NonPreloadRoomStateData(
       roomId: data.roomId.present ? data.roomId.value : this.roomId,
       type: data.type.present ? data.type.value : this.type,
+      stateKey: data.stateKey.present ? data.stateKey.value : this.stateKey,
       content: data.content.present ? data.content.value : this.content,
     );
   }
@@ -1662,19 +1724,21 @@ class NonPreloadRoomStateData extends DataClass
     return (StringBuffer('NonPreloadRoomStateData(')
           ..write('roomId: $roomId, ')
           ..write('type: $type, ')
+          ..write('stateKey: $stateKey, ')
           ..write('content: $content')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(roomId, type, content);
+  int get hashCode => Object.hash(roomId, type, stateKey, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is NonPreloadRoomStateData &&
           other.roomId == this.roomId &&
           other.type == this.type &&
+          other.stateKey == this.stateKey &&
           other.content == this.content);
 }
 
@@ -1682,31 +1746,37 @@ class NonPreloadRoomStateCompanion
     extends UpdateCompanion<NonPreloadRoomStateData> {
   final Value<String> roomId;
   final Value<String> type;
+  final Value<String> stateKey;
   final Value<String> content;
   final Value<int> rowid;
   const NonPreloadRoomStateCompanion({
     this.roomId = const Value.absent(),
     this.type = const Value.absent(),
+    this.stateKey = const Value.absent(),
     this.content = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   NonPreloadRoomStateCompanion.insert({
     required String roomId,
     required String type,
+    required String stateKey,
     required String content,
     this.rowid = const Value.absent(),
   })  : roomId = Value(roomId),
         type = Value(type),
+        stateKey = Value(stateKey),
         content = Value(content);
   static Insertable<NonPreloadRoomStateData> custom({
     Expression<String>? roomId,
     Expression<String>? type,
+    Expression<String>? stateKey,
     Expression<String>? content,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (roomId != null) 'room_id': roomId,
       if (type != null) 'type': type,
+      if (stateKey != null) 'state_key': stateKey,
       if (content != null) 'content': content,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1715,11 +1785,13 @@ class NonPreloadRoomStateCompanion
   NonPreloadRoomStateCompanion copyWith(
       {Value<String>? roomId,
       Value<String>? type,
+      Value<String>? stateKey,
       Value<String>? content,
       Value<int>? rowid}) {
     return NonPreloadRoomStateCompanion(
       roomId: roomId ?? this.roomId,
       type: type ?? this.type,
+      stateKey: stateKey ?? this.stateKey,
       content: content ?? this.content,
       rowid: rowid ?? this.rowid,
     );
@@ -1733,6 +1805,9 @@ class NonPreloadRoomStateCompanion
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
+    }
+    if (stateKey.present) {
+      map['state_key'] = Variable<String>(stateKey.value);
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
@@ -1748,6 +1823,7 @@ class NonPreloadRoomStateCompanion
     return (StringBuffer('NonPreloadRoomStateCompanion(')
           ..write('roomId: $roomId, ')
           ..write('type: $type, ')
+          ..write('stateKey: $stateKey, ')
           ..write('content: $content, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -6530,6 +6606,7 @@ typedef $$PreloadRoomStateTableCreateCompanionBuilder
     = PreloadRoomStateCompanion Function({
   required String roomId,
   required String type,
+  required String stateKey,
   required String content,
   Value<int> rowid,
 });
@@ -6537,6 +6614,7 @@ typedef $$PreloadRoomStateTableUpdateCompanionBuilder
     = PreloadRoomStateCompanion Function({
   Value<String> roomId,
   Value<String> type,
+  Value<String> stateKey,
   Value<String> content,
   Value<int> rowid,
 });
@@ -6555,6 +6633,9 @@ class $$PreloadRoomStateTableFilterComposer
 
   ColumnFilters<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get stateKey => $composableBuilder(
+      column: $table.stateKey, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnFilters(column));
@@ -6575,6 +6656,9 @@ class $$PreloadRoomStateTableOrderingComposer
   ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get stateKey => $composableBuilder(
+      column: $table.stateKey, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnOrderings(column));
 }
@@ -6593,6 +6677,9 @@ class $$PreloadRoomStateTableAnnotationComposer
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get stateKey =>
+      $composableBuilder(column: $table.stateKey, builder: (column) => column);
 
   GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
@@ -6628,24 +6715,28 @@ class $$PreloadRoomStateTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> type = const Value.absent(),
+            Value<String> stateKey = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               PreloadRoomStateCompanion(
             roomId: roomId,
             type: type,
+            stateKey: stateKey,
             content: content,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String roomId,
             required String type,
+            required String stateKey,
             required String content,
             Value<int> rowid = const Value.absent(),
           }) =>
               PreloadRoomStateCompanion.insert(
             roomId: roomId,
             type: type,
+            stateKey: stateKey,
             content: content,
             rowid: rowid,
           ),
@@ -6676,6 +6767,7 @@ typedef $$NonPreloadRoomStateTableCreateCompanionBuilder
     = NonPreloadRoomStateCompanion Function({
   required String roomId,
   required String type,
+  required String stateKey,
   required String content,
   Value<int> rowid,
 });
@@ -6683,6 +6775,7 @@ typedef $$NonPreloadRoomStateTableUpdateCompanionBuilder
     = NonPreloadRoomStateCompanion Function({
   Value<String> roomId,
   Value<String> type,
+  Value<String> stateKey,
   Value<String> content,
   Value<int> rowid,
 });
@@ -6701,6 +6794,9 @@ class $$NonPreloadRoomStateTableFilterComposer extends Composer<
 
   ColumnFilters<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get stateKey => $composableBuilder(
+      column: $table.stateKey, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnFilters(column));
@@ -6721,6 +6817,9 @@ class $$NonPreloadRoomStateTableOrderingComposer extends Composer<
   ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get stateKey => $composableBuilder(
+      column: $table.stateKey, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnOrderings(column));
 }
@@ -6739,6 +6838,9 @@ class $$NonPreloadRoomStateTableAnnotationComposer extends Composer<
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get stateKey =>
+      $composableBuilder(column: $table.stateKey, builder: (column) => column);
 
   GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
@@ -6776,24 +6878,28 @@ class $$NonPreloadRoomStateTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> roomId = const Value.absent(),
             Value<String> type = const Value.absent(),
+            Value<String> stateKey = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               NonPreloadRoomStateCompanion(
             roomId: roomId,
             type: type,
+            stateKey: stateKey,
             content: content,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String roomId,
             required String type,
+            required String stateKey,
             required String content,
             Value<int> rowid = const Value.absent(),
           }) =>
               NonPreloadRoomStateCompanion.insert(
             roomId: roomId,
             type: type,
+            stateKey: stateKey,
             content: content,
             rowid: rowid,
           ),

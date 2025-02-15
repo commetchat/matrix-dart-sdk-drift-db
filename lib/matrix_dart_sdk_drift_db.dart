@@ -539,10 +539,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           }
 
           var content = jsonDecode(state.content) as Map<String, dynamic>;
-          for (var entry in content.values) {
-            var event = Event.fromJson(entry, room);
-            room.setState(event);
-          }
+          var event = Event.fromJson(content, room);
+          room.setState(event);
         }
 
         var accountDatas = await db.select(db.roomAccountData).get();
@@ -604,7 +602,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 ..where((tbl) => tbl.roomId.equals(roomId)))
               .get();
           for (var state in states) {
-            var content = jsonDecode(state.content)[''];
+            var content = jsonDecode(state.content);
             room.setState(Event.fromJson(content, room));
           }
         }
@@ -639,7 +637,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           .get();
 
       return states
-          .map((e) => Event.fromJson(jsonDecode(e.content)[''], room))
+          .map((e) => Event.fromJson(jsonDecode(e.content), room))
           .toList();
     });
   }
@@ -1053,13 +1051,15 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                     PreloadRoomStateCompanion.insert(
                         roomId: eventUpdate.roomID,
                         type: event.type,
-                        content: jsonEncode({"": event.toJson()})));
+                        stateKey: "",
+                        content: jsonEncode(event.toJson())));
               } else {
                 await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                     NonPreloadRoomStateCompanion.insert(
                         roomId: eventUpdate.roomID,
                         type: event.type,
-                        content: jsonEncode({"": event.toJson()})));
+                        stateKey: "",
+                        content: jsonEncode(event.toJson())));
               }
             });
           }
@@ -1210,13 +1210,12 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                     ..limit(1))
                   .getSingleOrNull();
 
-              var content = prev != null ? jsonDecode(prev.content) : {};
-              content[stateKey] = eventUpdate.content;
-
+              var content = eventUpdate.content;
               await db.into(db.preloadRoomState).insertOnConflictUpdate(
                   PreloadRoomStateCompanion.insert(
                       roomId: eventUpdate.roomID,
                       type: type,
+                      stateKey: stateKey,
                       content: jsonEncode(content)));
             } else {
               var prev = await (db.select(db.nonPreloadRoomState)
@@ -1226,12 +1225,12 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                     ..limit(1))
                   .getSingleOrNull();
 
-              var content = prev != null ? jsonDecode(prev.content) : {};
-              content[stateKey] = eventUpdate.content;
+              var content = eventUpdate.content;
               await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                   NonPreloadRoomStateCompanion.insert(
                       roomId: eventUpdate.roomID,
                       type: type,
+                      stateKey: stateKey,
                       content: jsonEncode(content)));
             }
           });

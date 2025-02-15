@@ -45,19 +45,21 @@ class RoomData extends Table {
 class PreloadRoomState extends Table {
   TextColumn get roomId => text()();
   TextColumn get type => text()();
+  TextColumn get stateKey => text()();
   TextColumn get content => text()();
 
   @override
-  Set<Column> get primaryKey => {roomId, type};
+  Set<Column> get primaryKey => {roomId, type, stateKey};
 }
 
 class NonPreloadRoomState extends Table {
   TextColumn get roomId => text()();
   TextColumn get type => text()();
+  TextColumn get stateKey => text()();
   TextColumn get content => text()();
 
   @override
-  Set<Column> get primaryKey => {roomId, type};
+  Set<Column> get primaryKey => {roomId, type, stateKey};
 }
 
 class RoomAccountData extends Table {
