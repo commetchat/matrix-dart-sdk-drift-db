@@ -384,9 +384,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       sorted.insert(i, data.firstWhere((e) => e.eventId == eventIds[i]));
     }
 
-    return sorted
-        .map((e) => Event.fromJson(jsonDecode(e.content), room))
-        .toList();
+    final result = sorted.map((e) {
+      return Event.fromJson(jsonDecode(e.content), room);
+    }).toList();
+
+    return result;
   }
 
   @override
@@ -1074,6 +1076,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       if ([EventUpdateType.timeline, EventUpdateType.history].contains(type) &&
           event is MatrixEvent) {
         final eventId = event.eventId;
+        final timelineEvent = Event.fromMatrixEvent(event, tmpRoom);
+
         final prevEvent = await (db.select(db.eventData)
               ..where((tbl) =>
                   tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId))
@@ -1091,13 +1095,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           prevStatus = statusInt == null ? null : eventStatusFromInt(statusInt);
         }
 
-        final newStatus = eventStatusFromInt(
-          eventUpdate.content.tryGet<int>('status') ??
-              eventUpdate.content
-                  .tryGetMap<String, dynamic>('unsigned')
-                  ?.tryGet<int>(messageSendingStatusKey) ??
-              EventStatus.synced.intValue,
-        );
+        final newStatus = timelineEvent.status;
 
         if (!newStatus.isSynced && prevStatus != null && prevStatus.isSynced) {
           return;
@@ -1110,21 +1108,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 newStatus,
               );
 
-        eventUpdate.content['unsigned'] ??= <String, dynamic>{};
-        (eventUpdate.content['unsigned']
-                as Map<String, dynamic>)[messageSendingStatusKey] =
-            eventUpdate.content['status'] = status.intValue;
-
-        final transactionId = eventUpdate.content
-            .tryGetMap<String, dynamic>('unsigned')
-            ?.tryGet<String>('transaction_id');
+        final transactionId = timelineEvent.transactionId;
 
         await db.transaction(() async {
           await db.into(db.eventData).insertOnConflictUpdate(
               EventDataCompanion.insert(
                   roomId: roomId,
                   eventId: eventId,
-                  content: jsonEncode(eventUpdate.content)));
+                  content: jsonEncode(timelineEvent.toJson())));
         });
 
         await db.transaction(() async {
