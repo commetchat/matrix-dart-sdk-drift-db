@@ -1029,18 +1029,17 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
     Client client,
   ) async {
     return runBenchmarked("Store event update", () async {
-      final eventUpdate = event;
       final tmpRoom =
           client.getRoomById(roomId) ?? Room(id: roomId, client: client);
 
-      if (eventUpdate.content['type'] == EventTypes.Redaction) {
-        final eventId = eventUpdate.content.tryGet<String>('redacts');
+      if (event.type == EventTypes.Redaction && event is MatrixEvent) {
+        final redactionEvent = Event.fromMatrixEvent(event, tmpRoom);
+        final eventId = redactionEvent.redacts;
         final redactedEvent =
             eventId != null ? await getEventById(eventId, tmpRoom) : null;
 
         if (redactedEvent != null) {
-          redactedEvent
-              .setRedactionEvent(Event.fromJson(eventUpdate.content, tmpRoom));
+          redactedEvent.setRedactionEvent(redactionEvent);
 
           await db.transaction(() async {
             var data = EventDataCompanion.insert(
@@ -1178,39 +1177,41 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         }
       }
 
-      final stateKey = eventUpdate.content['state_key'] as String?;
-      // Store a common state event
-      if (stateKey != null) {
-        if (eventUpdate.content['type'] == EventTypes.RoomMember) {
-          await db.transaction(() async {
-            await db.into(db.roomMembers).insertOnConflictUpdate(
-                RoomMembersCompanion.insert(
-                    roomId: roomId,
-                    userId: stateKey,
-                    content: jsonEncode(eventUpdate.content)));
-          });
-        } else {
-          final type = eventUpdate.content['type'] as String;
+      if (event is MatrixEvent) {
+        final stateKey = event.stateKey;
+        // Store a common state event
+        if (stateKey != null) {
+          if (event.type == EventTypes.RoomMember) {
+            await db.transaction(() async {
+              await db.into(db.roomMembers).insertOnConflictUpdate(
+                  RoomMembersCompanion.insert(
+                      roomId: roomId,
+                      userId: stateKey,
+                      content: jsonEncode(event.toJson())));
+            });
+          } else {
+            final type = event.type;
 
-          await db.transaction(() async {
-            if (client.importantStateEvents.contains(type)) {
-              var content = eventUpdate.content;
-              await db.into(db.preloadRoomState).insertOnConflictUpdate(
-                  PreloadRoomStateCompanion.insert(
-                      roomId: roomId,
-                      type: type,
-                      stateKey: stateKey,
-                      content: jsonEncode(content)));
-            } else {
-              var content = eventUpdate.content;
-              await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
-                  NonPreloadRoomStateCompanion.insert(
-                      roomId: roomId,
-                      type: type,
-                      stateKey: stateKey,
-                      content: jsonEncode(content)));
-            }
-          });
+            await db.transaction(() async {
+              if (client.importantStateEvents.contains(type)) {
+                var content = event.toJson();
+                await db.into(db.preloadRoomState).insertOnConflictUpdate(
+                    PreloadRoomStateCompanion.insert(
+                        roomId: roomId,
+                        type: type,
+                        stateKey: stateKey,
+                        content: jsonEncode(content)));
+              } else {
+                var content = event.toJson();
+                await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
+                    NonPreloadRoomStateCompanion.insert(
+                        roomId: roomId,
+                        type: type,
+                        stateKey: stateKey,
+                        content: jsonEncode(content)));
+              }
+            });
+          }
         }
       }
     });
