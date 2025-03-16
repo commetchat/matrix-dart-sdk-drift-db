@@ -222,7 +222,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           content: e.content,
           indexes: e.indexes,
           allowedAtIndex: e.allowedAtIndex,
-          uploaded: e.uploaded,
           senderKey: e.senderKey,
           senderClaimedKeys: e.senderClaimedKey))).toList();
     });
@@ -415,7 +414,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           content: data.content,
           indexes: data.indexes,
           allowedAtIndex: data.allowedAtIndex,
-          uploaded: data.uploaded,
           senderKey: data.senderKey,
           senderClaimedKeys: data.senderClaimedKey);
     });
@@ -546,11 +544,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         var accountDatas = await db.select(db.roomAccountData).get();
 
         for (var accountData in accountDatas) {
-          var event = BasicRoomEvent.fromJson(jsonDecode(accountData.content));
+          var event = BasicEvent.fromJson(jsonDecode(accountData.content));
 
-          var room = rooms[event.roomId];
+          var room = rooms[accountData.roomId];
           if (room == null) {
-            print("Found account data for unknown room ${event.roomId}");
+            print("Found account data for unknown room ${accountData.roomId}");
             continue;
           }
 
@@ -1008,71 +1006,76 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future storeAccountData(String type, String content) async {
+  Future storeAccountData(
+    String type,
+    Map<String, Object?> content,
+  ) async {
     return runBenchmarked("Store account data", () async {
       return db.transaction(() async {
         await db.into(db.accountData).insertOnConflictUpdate(
-            AccountDataCompanion.insert(type: type, content: content));
+            AccountDataCompanion.insert(
+                type: type, content: jsonEncode(content)));
       });
     });
   }
 
   @override
-  Future<void> storeEventUpdate(EventUpdate eventUpdate, Client client) async {
+  Future<void> storeEventUpdate(
+    String roomId,
+    StrippedStateEvent event,
+    EventUpdateType type,
+    Client client,
+  ) async {
     return runBenchmarked("Store event update", () async {
-      if (eventUpdate.type == EventUpdateType.ephemeral) {
-        return;
-      }
-
-      final tmpRoom = client.getRoomById(eventUpdate.roomID) ??
-          Room(id: eventUpdate.roomID, client: client);
+      final eventUpdate = event;
+      final tmpRoom =
+          client.getRoomById(roomId) ?? Room(id: roomId, client: client);
 
       if (eventUpdate.content['type'] == EventTypes.Redaction) {
         final eventId = eventUpdate.content.tryGet<String>('redacts');
-        final event =
+        final redactedEvent =
             eventId != null ? await getEventById(eventId, tmpRoom) : null;
 
-        if (event != null) {
-          event.setRedactionEvent(Event.fromJson(eventUpdate.content, tmpRoom));
+        if (redactedEvent != null) {
+          redactedEvent
+              .setRedactionEvent(Event.fromJson(eventUpdate.content, tmpRoom));
 
           await db.transaction(() async {
             var data = EventDataCompanion.insert(
-                roomId: eventUpdate.roomID,
+                roomId: roomId,
                 eventId: eventId!,
-                content: jsonEncode(event.toJson()));
+                content: jsonEncode(redactedEvent.toJson()));
 
             await db.into(db.eventData).insertOnConflictUpdate(data);
           });
 
-          if (tmpRoom.lastEvent?.eventId == event.eventId) {
+          if (tmpRoom.lastEvent?.eventId == redactedEvent.eventId) {
             await db.transaction(() async {
-              if (client.importantStateEvents.contains(event.type)) {
+              if (client.importantStateEvents.contains(redactedEvent.type)) {
                 await db.into(db.preloadRoomState).insertOnConflictUpdate(
                     PreloadRoomStateCompanion.insert(
-                        roomId: eventUpdate.roomID,
-                        type: event.type,
+                        roomId: roomId,
+                        type: redactedEvent.type,
                         stateKey: "",
-                        content: jsonEncode(event.toJson())));
+                        content: jsonEncode(redactedEvent.toJson())));
               } else {
                 await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                     NonPreloadRoomStateCompanion.insert(
-                        roomId: eventUpdate.roomID,
-                        type: event.type,
+                        roomId: roomId,
+                        type: redactedEvent.type,
                         stateKey: "",
-                        content: jsonEncode(event.toJson())));
+                        content: jsonEncode(redactedEvent.toJson())));
               }
             });
           }
         }
       }
 
-      if ([EventUpdateType.timeline, EventUpdateType.history]
-          .contains(eventUpdate.type)) {
-        final eventId = eventUpdate.content["event_id"];
+      if ([EventUpdateType.timeline, EventUpdateType.history].contains(type)) {
+        final eventId = eventUpdate.content["event_id"] as String;
         final prevEvent = await (db.select(db.eventData)
               ..where((tbl) =>
-                  tbl.roomId.equals(eventUpdate.roomID) &
-                  tbl.eventId.equals(eventId))
+                  tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId))
               ..limit(1))
             .getSingleOrNull();
 
@@ -1107,11 +1110,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               );
 
         eventUpdate.content['unsigned'] ??= <String, dynamic>{};
-        eventUpdate.content['unsigned'][messageSendingStatusKey] =
-            eventUpdate.content['status'] = status.intValue;
-
-        eventUpdate.content['unsigned'] ??= <String, dynamic>{};
-        eventUpdate.content['unsigned'][messageSendingStatusKey] =
+        (eventUpdate.content['unsigned']
+                as Map<String, dynamic>)[messageSendingStatusKey] =
             eventUpdate.content['status'] = status.intValue;
 
         final transactionId = eventUpdate.content
@@ -1121,7 +1121,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         await db.transaction(() async {
           await db.into(db.eventData).insertOnConflictUpdate(
               EventDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
+                  roomId: roomId,
                   eventId: eventId,
                   content: jsonEncode(eventUpdate.content)));
         });
@@ -1129,7 +1129,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         await db.transaction(() async {
           var prevData = await (db.select(db.timelineFragmentData)
                 ..where((tbl) =>
-                    tbl.roomId.equals(eventUpdate.roomID) &
+                    tbl.roomId.equals(roomId) &
                     tbl.sending.equals(!status.isSent))
                 ..limit(1))
               .getSingleOrNull();
@@ -1141,7 +1141,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           bool sending = !status.isSent;
 
           if (fragments.contains(eventId) == false) {
-            if (eventUpdate.type == EventUpdateType.history) {
+            if (type == EventUpdateType.history) {
               fragments.add(eventId);
             } else {
               fragments.insert(0, eventId);
@@ -1149,14 +1149,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           } else if (status.isSynced &&
               prevStatus != null &&
               prevStatus.isSent &&
-              eventUpdate.type != EventUpdateType.history) {
+              type != EventUpdateType.history) {
             fragments.remove(eventId);
             fragments.insert(0, eventId);
           }
 
           await db.into(db.timelineFragmentData).insertOnConflictUpdate(
               TimelineFragmentDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
+                  roomId: roomId,
                   sending: sending,
                   fragmentsList: jsonEncode(fragments)));
         });
@@ -1164,8 +1164,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         if (status.isSent) {
           var sending = await (db.select(db.timelineFragmentData)
                 ..where((tbl) =>
-                    tbl.roomId.equals(eventUpdate.roomID) &
-                    tbl.sending.equals(true)))
+                    tbl.roomId.equals(roomId) & tbl.sending.equals(true)))
               .getSingleOrNull();
 
           if (sending != null) {
@@ -1175,7 +1174,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               ids.removeAt(index);
               await db.into(db.timelineFragmentData).insertOnConflictUpdate(
                   TimelineFragmentDataCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       sending: true,
                       fragmentsList: jsonEncode(ids)));
             }
@@ -1183,19 +1182,19 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         }
 
         if (!status.isError && !status.isSending && transactionId != null) {
-          await removeEvent(transactionId, eventUpdate.roomID);
+          await removeEvent(transactionId, roomId);
         }
       }
 
-      final stateKey = eventUpdate.content['state_key'];
+      final stateKey = eventUpdate.content['state_key'] as String?;
       // Store a common state event
       if (stateKey != null) {
         if (eventUpdate.content['type'] == EventTypes.RoomMember) {
           await db.transaction(() async {
             await db.into(db.roomMembers).insertOnConflictUpdate(
                 RoomMembersCompanion.insert(
-                    roomId: eventUpdate.roomID,
-                    userId: eventUpdate.content['state_key'],
+                    roomId: roomId,
+                    userId: stateKey,
                     content: jsonEncode(eventUpdate.content)));
           });
         } else {
@@ -1206,7 +1205,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               var content = eventUpdate.content;
               await db.into(db.preloadRoomState).insertOnConflictUpdate(
                   PreloadRoomStateCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       type: type,
                       stateKey: stateKey,
                       content: jsonEncode(content)));
@@ -1214,23 +1213,13 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               var content = eventUpdate.content;
               await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                   NonPreloadRoomStateCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       type: type,
                       stateKey: stateKey,
                       content: jsonEncode(content)));
             }
           });
         }
-      }
-
-      if (eventUpdate.type == EventUpdateType.accountData) {
-        await db.transaction(() async {
-          await db.into(db.roomAccountData).insertOnConflictUpdate(
-              RoomAccountDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
-                  type: eventUpdate.content['type'],
-                  content: jsonEncode(eventUpdate.content)));
-        });
       }
     });
   }
@@ -1618,6 +1607,24 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       await (db
           .into(db.clientData)
           .insertOnConflictUpdate(data.copyWith(wellKnown: Value(info))));
+    });
+  }
+
+  @override
+  Future<bool> deleteFile(Uri mxcUri) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future storeRoomAccountData(String roomId, BasicEvent event) {
+    return runBenchmarked("Store room account data", () async {
+      return db.transaction(() async {
+        await db.into(db.roomAccountData).insertOnConflictUpdate(
+            RoomAccountDataCompanion.insert(
+                roomId: roomId,
+                type: event.type,
+                content: jsonEncode(event.toJson())));
+      });
     });
   }
 }
