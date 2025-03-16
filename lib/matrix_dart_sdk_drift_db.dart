@@ -1071,8 +1071,9 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         }
       }
 
-      if ([EventUpdateType.timeline, EventUpdateType.history].contains(type)) {
-        final eventId = eventUpdate.content["event_id"] as String;
+      if ([EventUpdateType.timeline, EventUpdateType.history].contains(type) &&
+          event is MatrixEvent) {
+        final eventId = event.eventId;
         final prevEvent = await (db.select(db.eventData)
               ..where((tbl) =>
                   tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId))
