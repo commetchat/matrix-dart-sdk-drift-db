@@ -546,11 +546,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         var accountDatas = await db.select(db.roomAccountData).get();
 
         for (var accountData in accountDatas) {
-          var event = BasicRoomEvent.fromJson(jsonDecode(accountData.content));
+          var event = BasicEvent.fromJson(jsonDecode(accountData.content));
 
-          var room = rooms[event.roomId];
+          var room = rooms[accountData.roomId];
           if (room == null) {
-            print("Found account data for unknown room ${event.roomId}");
+            print("Found account data for unknown room ${accountData.roomId}");
             continue;
           }
 
@@ -596,6 +596,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         }
 
         final room = Room.fromJson(jsonDecode(roomData.content), client);
+
+        var roomAccountData = await (db.select(db.roomAccountData)
+              ..where((tbl) => tbl.roomId.equals(roomId)))
+            .get();
+        for (var data in roomAccountData) {
+          final event = BasicEvent.fromJson(jsonDecode(data.content));
+          room.roomAccountData[event.type] = event;
+        }
 
         if (loadImportantStates) {
           var states = await (db.select(db.preloadRoomState)
@@ -791,7 +799,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           return;
         }
 
-        db
+        await db
             .into(db.inboundGroupSession)
             .insertOnConflictUpdate(existing.copyWith(uploaded: true));
       });
@@ -1008,71 +1016,77 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future storeAccountData(String type, String content) async {
+  Future storeAccountData(String type, Map<String, Object?> content) async {
     return runBenchmarked("Store account data", () async {
       return db.transaction(() async {
         await db.into(db.accountData).insertOnConflictUpdate(
-            AccountDataCompanion.insert(type: type, content: content));
+            AccountDataCompanion.insert(
+                type: type, content: jsonEncode(content)));
       });
     });
   }
 
   @override
-  Future<void> storeEventUpdate(EventUpdate eventUpdate, Client client) async {
+  Future<void> storeEventUpdate(
+    String roomId,
+    StrippedStateEvent event,
+    EventUpdateType type,
+    Client client,
+  ) async {
     return runBenchmarked("Store event update", () async {
-      if (eventUpdate.type == EventUpdateType.ephemeral) {
-        return;
-      }
+      final tmpRoom =
+          client.getRoomById(roomId) ?? Room(id: roomId, client: client);
 
-      final tmpRoom = client.getRoomById(eventUpdate.roomID) ??
-          Room(id: eventUpdate.roomID, client: client);
+      if (event.type == EventTypes.Redaction && event is MatrixEvent) {
+        final redactionEvent = Event.fromMatrixEvent(event, tmpRoom);
 
-      if (eventUpdate.content['type'] == EventTypes.Redaction) {
-        final eventId = eventUpdate.content.tryGet<String>('redacts');
-        final event =
+        final eventId = redactionEvent.redacts;
+
+        final redactedEvent =
             eventId != null ? await getEventById(eventId, tmpRoom) : null;
 
-        if (event != null) {
-          event.setRedactionEvent(Event.fromJson(eventUpdate.content, tmpRoom));
+        if (redactedEvent != null) {
+          redactedEvent.setRedactionEvent(redactionEvent);
 
           await db.transaction(() async {
             var data = EventDataCompanion.insert(
-                roomId: eventUpdate.roomID,
+                roomId: roomId,
                 eventId: eventId!,
-                content: jsonEncode(event.toJson()));
+                content: jsonEncode(redactedEvent.toJson()));
 
             await db.into(db.eventData).insertOnConflictUpdate(data);
           });
 
-          if (tmpRoom.lastEvent?.eventId == event.eventId) {
+          if (tmpRoom.lastEvent?.eventId == redactedEvent.eventId) {
             await db.transaction(() async {
-              if (client.importantStateEvents.contains(event.type)) {
+              if (client.importantStateEvents.contains(redactedEvent.type)) {
                 await db.into(db.preloadRoomState).insertOnConflictUpdate(
                     PreloadRoomStateCompanion.insert(
-                        roomId: eventUpdate.roomID,
-                        type: event.type,
+                        roomId: roomId,
+                        type: redactedEvent.type,
                         stateKey: "",
-                        content: jsonEncode(event.toJson())));
+                        content: jsonEncode(redactedEvent.toJson())));
               } else {
                 await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                     NonPreloadRoomStateCompanion.insert(
-                        roomId: eventUpdate.roomID,
-                        type: event.type,
+                        roomId: roomId,
+                        type: redactedEvent.type,
                         stateKey: "",
-                        content: jsonEncode(event.toJson())));
+                        content: jsonEncode(redactedEvent.toJson())));
               }
             });
           }
         }
       }
 
-      if ([EventUpdateType.timeline, EventUpdateType.history]
-          .contains(eventUpdate.type)) {
-        final eventId = eventUpdate.content["event_id"];
+      if ([EventUpdateType.timeline, EventUpdateType.history].contains(type) &&
+          event is MatrixEvent) {
+        final timelineEvent = Event.fromMatrixEvent(event, tmpRoom);
+        final eventId = event.eventId;
+
         final prevEvent = await (db.select(db.eventData)
               ..where((tbl) =>
-                  tbl.roomId.equals(eventUpdate.roomID) &
-                  tbl.eventId.equals(eventId))
+                  tbl.roomId.equals(roomId) & tbl.eventId.equals(eventId))
               ..limit(1))
             .getSingleOrNull();
 
@@ -1087,13 +1101,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           prevStatus = statusInt == null ? null : eventStatusFromInt(statusInt);
         }
 
-        final newStatus = eventStatusFromInt(
-          eventUpdate.content.tryGet<int>('status') ??
-              eventUpdate.content
-                  .tryGetMap<String, dynamic>('unsigned')
-                  ?.tryGet<int>(messageSendingStatusKey) ??
-              EventStatus.synced.intValue,
-        );
+        final newStatus = timelineEvent.status;
 
         if (!newStatus.isSynced && prevStatus != null && prevStatus.isSynced) {
           return;
@@ -1106,30 +1114,20 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 newStatus,
               );
 
-        eventUpdate.content['unsigned'] ??= <String, dynamic>{};
-        eventUpdate.content['unsigned'][messageSendingStatusKey] =
-            eventUpdate.content['status'] = status.intValue;
-
-        eventUpdate.content['unsigned'] ??= <String, dynamic>{};
-        eventUpdate.content['unsigned'][messageSendingStatusKey] =
-            eventUpdate.content['status'] = status.intValue;
-
-        final transactionId = eventUpdate.content
-            .tryGetMap<String, dynamic>('unsigned')
-            ?.tryGet<String>('transaction_id');
+        final transactionId = timelineEvent.transactionId;
 
         await db.transaction(() async {
           await db.into(db.eventData).insertOnConflictUpdate(
               EventDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
+                  roomId: roomId,
                   eventId: eventId,
-                  content: jsonEncode(eventUpdate.content)));
+                  content: jsonEncode(timelineEvent)));
         });
 
         await db.transaction(() async {
           var prevData = await (db.select(db.timelineFragmentData)
                 ..where((tbl) =>
-                    tbl.roomId.equals(eventUpdate.roomID) &
+                    tbl.roomId.equals(roomId) &
                     tbl.sending.equals(!status.isSent))
                 ..limit(1))
               .getSingleOrNull();
@@ -1141,7 +1139,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           bool sending = !status.isSent;
 
           if (fragments.contains(eventId) == false) {
-            if (eventUpdate.type == EventUpdateType.history) {
+            if (type == EventUpdateType.history) {
               fragments.add(eventId);
             } else {
               fragments.insert(0, eventId);
@@ -1149,14 +1147,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
           } else if (status.isSynced &&
               prevStatus != null &&
               prevStatus.isSent &&
-              eventUpdate.type != EventUpdateType.history) {
+              type != EventUpdateType.history) {
             fragments.remove(eventId);
             fragments.insert(0, eventId);
           }
 
           await db.into(db.timelineFragmentData).insertOnConflictUpdate(
               TimelineFragmentDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
+                  roomId: roomId,
                   sending: sending,
                   fragmentsList: jsonEncode(fragments)));
         });
@@ -1164,8 +1162,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         if (status.isSent) {
           var sending = await (db.select(db.timelineFragmentData)
                 ..where((tbl) =>
-                    tbl.roomId.equals(eventUpdate.roomID) &
-                    tbl.sending.equals(true)))
+                    tbl.roomId.equals(roomId) & tbl.sending.equals(true)))
               .getSingleOrNull();
 
           if (sending != null) {
@@ -1175,7 +1172,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               ids.removeAt(index);
               await db.into(db.timelineFragmentData).insertOnConflictUpdate(
                   TimelineFragmentDataCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       sending: true,
                       fragmentsList: jsonEncode(ids)));
             }
@@ -1183,54 +1180,50 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
         }
 
         if (!status.isError && !status.isSending && transactionId != null) {
-          await removeEvent(transactionId, eventUpdate.roomID);
+          await removeEvent(transactionId, roomId);
         }
       }
 
-      final stateKey = eventUpdate.content['state_key'];
+      final stateKey = event.stateKey;
       // Store a common state event
-      if (stateKey != null) {
-        if (eventUpdate.content['type'] == EventTypes.RoomMember) {
+      if (stateKey != null &&
+          // Don't store events as state updates when paginating backwards.
+          {
+            EventUpdateType.timeline,
+            EventUpdateType.state,
+            EventUpdateType.inviteState,
+          }.contains(type)) {
+        if (event.type == EventTypes.RoomMember) {
           await db.transaction(() async {
             await db.into(db.roomMembers).insertOnConflictUpdate(
                 RoomMembersCompanion.insert(
-                    roomId: eventUpdate.roomID,
-                    userId: eventUpdate.content['state_key'],
-                    content: jsonEncode(eventUpdate.content)));
+                    roomId: roomId,
+                    userId: stateKey,
+                    content: jsonEncode(event.toJson())));
           });
         } else {
-          final type = eventUpdate.content['type'] as String;
+          final type = event.type;
 
           await db.transaction(() async {
             if (client.importantStateEvents.contains(type)) {
-              var content = eventUpdate.content;
+              var content = event.toJson();
               await db.into(db.preloadRoomState).insertOnConflictUpdate(
                   PreloadRoomStateCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       type: type,
                       stateKey: stateKey,
                       content: jsonEncode(content)));
             } else {
-              var content = eventUpdate.content;
+              var content = event.toJson();
               await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
                   NonPreloadRoomStateCompanion.insert(
-                      roomId: eventUpdate.roomID,
+                      roomId: roomId,
                       type: type,
                       stateKey: stateKey,
                       content: jsonEncode(content)));
             }
           });
         }
-      }
-
-      if (eventUpdate.type == EventUpdateType.accountData) {
-        await db.transaction(() async {
-          await db.into(db.roomAccountData).insertOnConflictUpdate(
-              RoomAccountDataCompanion.insert(
-                  roomId: eventUpdate.roomID,
-                  type: eventUpdate.content['type'],
-                  content: jsonEncode(eventUpdate.content)));
-        });
       }
     });
   }
@@ -1618,6 +1611,23 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       await (db
           .into(db.clientData)
           .insertOnConflictUpdate(data.copyWith(wellKnown: Value(info))));
+    });
+  }
+
+  @override
+  Future<bool> deleteFile(Uri mxcUri) async {
+    // TODO: implement deleteFile
+    return false;
+  }
+
+  @override
+  Future storeRoomAccountData(String roomId, BasicEvent event) async {
+    await db.transaction(() async {
+      await db.into(db.roomAccountData).insertOnConflictUpdate(
+          RoomAccountDataCompanion.insert(
+              roomId: roomId,
+              type: event.type,
+              content: jsonEncode(event.toJson())));
     });
   }
 }
