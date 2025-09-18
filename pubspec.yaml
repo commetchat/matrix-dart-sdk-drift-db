@@ -9,7 +9,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  drift: ^2.22.1
+  drift: ^2.28.1
   flutter:
     sdk: flutter
   matrix:
@@ -21,13 +21,13 @@ dependencies:
 
 
 dev_dependencies:
+  drift_dev: ^2.28.2
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
   test: ^1.15.7
   file: ">=6.1.1 <8.0.0"
   build_runner: ^2.4.10
-  drift_dev: ^2.22.1
 
 
 flutter:
