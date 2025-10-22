@@ -339,10 +339,14 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       {int start = 0, bool onlySending = false, int? limit}) async {
     return runBenchmarked("Get event list", () async {
       var data = await db.transaction(() async {
-        var sending = await (db.select(db.timelineFragmentData)
-              ..where((tbl) =>
-                  tbl.roomId.equals(room.id) & tbl.sending.equals(true)))
-            .getSingleOrNull();
+        TimelineFragmentDataData? sending;
+
+        if (start == 0) {
+          sending = await (db.select(db.timelineFragmentData)
+                ..where((tbl) =>
+                    tbl.roomId.equals(room.id) & tbl.sending.equals(true)))
+              .getSingleOrNull();
+        }
 
         var sent = await (db.select(db.timelineFragmentData)
               ..where((tbl) =>
