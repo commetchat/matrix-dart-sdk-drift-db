@@ -1060,26 +1060,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
             await db.into(db.eventData).insertOnConflictUpdate(data);
           });
-
-          if (tmpRoom.lastEvent?.eventId == redactedEvent.eventId) {
-            await db.transaction(() async {
-              if (client.importantStateEvents.contains(redactedEvent.type)) {
-                await db.into(db.preloadRoomState).insertOnConflictUpdate(
-                    PreloadRoomStateCompanion.insert(
-                        roomId: roomId,
-                        type: redactedEvent.type,
-                        stateKey: "",
-                        content: jsonEncode(redactedEvent.toJson())));
-              } else {
-                await db.into(db.nonPreloadRoomState).insertOnConflictUpdate(
-                    NonPreloadRoomStateCompanion.insert(
-                        roomId: roomId,
-                        type: redactedEvent.type,
-                        stateKey: "",
-                        content: jsonEncode(redactedEvent.toJson())));
-              }
-            });
-          }
         }
       }
 
