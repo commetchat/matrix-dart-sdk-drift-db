@@ -14,6 +14,7 @@ class ClientData extends Table {
   TextColumn get olmAccount => text().nullable()();
   TextColumn get syncFilterId => text().nullable()();
   TextColumn get wellKnown => text().nullable()();
+  TextColumn get oidcClientId => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -206,4 +207,21 @@ class CachedProfileData extends Table {
 
   @override
   Set<Column> get primaryKey => {userId};
+}
+
+class CustomCacheData extends Table {
+  TextColumn get key => text()();
+  TextColumn get content => text()();
+  DateTimeColumn get savedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
+class ReadReceiptStateData extends Table {
+  TextColumn get roomId => text()();
+  TextColumn get content => text()();
+
+  @override
+  Set<Column> get primaryKey => {roomId};
 }

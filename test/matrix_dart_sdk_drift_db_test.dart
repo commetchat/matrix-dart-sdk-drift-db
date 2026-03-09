@@ -38,7 +38,7 @@ String createLargeString(String character, int desiredSize) {
   return buffer.toString();
 }
 
-Future<MatrixSdkDriftDatabase> getDatabase() async {
+Future<MatrixSdkDriftDatabase> getMatrixSdkDatabase() async {
   return MatrixSdkDriftDatabase.init(NativeDatabase.memory(), "Test Database");
 }
 
@@ -46,7 +46,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final databaseBuilders = {
-    'Drift Database': getDatabase,
+    'Drift Database': getMatrixSdkDatabase,
   };
 
   for (final databaseBuilder in databaseBuilders.entries) {
@@ -118,27 +118,63 @@ void main() {
         });
         final client = Client(
           'testclient',
-          database: await getDatabase(),
+          database: await getMatrixSdkDatabase(),
         );
         await database.storeRoomUpdate('!testroom', roomUpdate, null, client);
         final rooms = await database.getRoomList(client);
         expect(rooms.single.id, '!testroom');
       });
-      test('getRoomList', () async {
+      test('getSingleRoom', () async {
         final room = await database.getSingleRoom(
           Client(
             'testclient',
-            database: await getDatabase(),
+            database: await getMatrixSdkDatabase(),
           ),
           '!testroom',
         );
         expect(room?.id, '!testroom');
       });
+      test('storeLatestReceiptState', () async {
+        await database.storeLatestReceiptState(
+          '!testroom',
+          LatestReceiptState(
+            global: LatestReceiptStateForTimeline(
+              latestOwnReceipt: LatestReceiptStateData(
+                '\$1234',
+                DateTime.now().millisecondsSinceEpoch,
+              ),
+              ownPrivate: null,
+              ownPublic: null,
+              otherUsers: {},
+            ),
+          ),
+        );
+        final room = await database.getSingleRoom(
+          Client(
+            'testclient',
+            database: await getMatrixSdkDatabase(),
+          ),
+          '!testroom',
+        );
+        expect(room?.id, '!testroom');
+        expect(room!.receiptState.global.latestOwnReceipt!.eventId, '\$1234');
+        final rooms = await database.getRoomList(
+          Client(
+            'testclient',
+            database: await getMatrixSdkDatabase(),
+          ),
+        );
+        expect(rooms.single.id, '!testroom');
+        expect(
+          rooms.single.receiptState.global.latestOwnReceipt!.eventId,
+          '\$1234',
+        );
+      });
       test('getRoomList', () async {
         final list = await database.getRoomList(
           Client(
             'testclient',
-            database: await getDatabase(),
+            database: await getMatrixSdkDatabase(),
           ),
         );
         expect(list.single.id, '!testroom');
@@ -146,7 +182,7 @@ void main() {
       test('setRoomPrevBatch', () async {
         final client = Client(
           'testclient',
-          database: await getDatabase(),
+          database: await getMatrixSdkDatabase(),
         );
         await database.setRoomPrevBatch('1234', '!testroom', client);
         final rooms = await database.getRoomList(client);
@@ -157,7 +193,7 @@ void main() {
         final rooms = await database.getRoomList(
           Client(
             'testclient',
-            database: await getDatabase(),
+            database: await getMatrixSdkDatabase(),
           ),
         );
         expect(rooms.isEmpty, true);
@@ -178,6 +214,7 @@ void main() {
           'deviceName',
           'prevBatch',
           'olmAccount',
+          'abcd1234',
         );
 
         final client = await database.getClient('name');
@@ -198,6 +235,7 @@ void main() {
           'deviceName',
           'prevBatch',
           'olmAccount',
+          'abcd1234',
         );
         final client = await database.getClient('name');
         expect(client?['token'], 'token_different');
@@ -272,7 +310,7 @@ void main() {
           EventUpdateType.timeline,
           Client(
             'testclient',
-            database: await getDatabase(),
+            database: await getMatrixSdkDatabase(),
           ),
         );
       });
@@ -280,7 +318,7 @@ void main() {
         final roomid = '!testrooma:example.com';
         final client = Client(
           'testclient',
-          database: await getDatabase(),
+          database: await getMatrixSdkDatabase(),
         );
 
         await database.storeRoomUpdate(
@@ -418,7 +456,7 @@ void main() {
             id: '!testroom:example.com',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -430,7 +468,7 @@ void main() {
             id: '!testroom:example.com',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -443,7 +481,7 @@ void main() {
             id: '!testroom:example.com',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -455,7 +493,7 @@ void main() {
             id: '!testroom:example.com',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -472,7 +510,7 @@ void main() {
             id: '!testroom:example.com',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -640,7 +678,7 @@ void main() {
             id: '!mep',
             client: Client(
               'testclient',
-              database: await getDatabase(),
+              database: await getMatrixSdkDatabase(),
             ),
           ),
         );
@@ -650,7 +688,7 @@ void main() {
         await database.getUserDeviceKeys(
           Client(
             'testclient',
-            database: await getDatabase(),
+            database: await getMatrixSdkDatabase(),
           ),
         );
       });
@@ -688,6 +726,20 @@ void main() {
           '@alice:example.com',
           true,
         );
+      });
+      test('storeUserDeviceKeysInfo', () async {
+        var cache = await database.getCustomCacheObject('test');
+        expect(cache, null);
+        await database.cacheCustomObject(
+          'test',
+          {'foo': 'bar', 'num': 42},
+        );
+        cache = await database.getCustomCacheObject('test');
+        expect(cache!.content, {'foo': 'bar', 'num': 42});
+
+        await database.clearCache();
+        cache = await database.getCustomCacheObject('test');
+        expect(cache, null);
       });
       test('storeUserDeviceKey', () async {
         await database.storeUserDeviceKey(
@@ -774,7 +826,7 @@ void main() {
         await database.close();
       });
       test('Delete', () async {
-        final database = await getDatabase();
+        final database = await getMatrixSdkDatabase();
         await database.storeAccountData(
           'm.test.data',
           {'foo': 'bar'},
@@ -782,7 +834,7 @@ void main() {
         await database.delete();
 
         // Check if previously stored data is gone:
-        final reopenedDatabase = await getDatabase();
+        final reopenedDatabase = await getMatrixSdkDatabase();
         final dump = await reopenedDatabase.getAccountData();
         expect(dump.isEmpty, true);
       });

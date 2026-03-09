@@ -27,12 +27,14 @@ part 'database.g.dart';
   UserCrossSigningKey,
   PresenceData,
   CachedProfileData,
+  CustomCacheData,
+  ReadReceiptStateData,
 ])
 class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
   MatrixSdkDriftDBImplementation(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -61,6 +63,12 @@ class MatrixSdkDriftDBImplementation extends _$MatrixSdkDriftDBImplementation {
           ], columnTransformer: {
             preloadRoomState.stateKey: const Constant("")
           }));
+        }
+
+        if (from < 5) {
+          await m.addColumn(clientData, clientData.oidcClientId);
+          await m.createTable(customCacheData);
+          await m.createTable(readReceiptStateData);
         }
       },
       beforeOpen: (details) async {

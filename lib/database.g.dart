@@ -83,6 +83,12 @@ class $ClientDataTable extends ClientData
   late final GeneratedColumn<String> wellKnown = GeneratedColumn<String>(
       'well_known', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _oidcClientIdMeta =
+      const VerificationMeta('oidcClientId');
+  @override
+  late final GeneratedColumn<String> oidcClientId = GeneratedColumn<String>(
+      'oidc_client_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -97,7 +103,8 @@ class $ClientDataTable extends ClientData
         prevBatch,
         olmAccount,
         syncFilterId,
-        wellKnown
+        wellKnown,
+        oidcClientId
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -180,6 +187,12 @@ class $ClientDataTable extends ClientData
       context.handle(_wellKnownMeta,
           wellKnown.isAcceptableOrUnknown(data['well_known']!, _wellKnownMeta));
     }
+    if (data.containsKey('oidc_client_id')) {
+      context.handle(
+          _oidcClientIdMeta,
+          oidcClientId.isAcceptableOrUnknown(
+              data['oidc_client_id']!, _oidcClientIdMeta));
+    }
     return context;
   }
 
@@ -215,6 +228,8 @@ class $ClientDataTable extends ClientData
           .read(DriftSqlType.string, data['${effectivePrefix}sync_filter_id']),
       wellKnown: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}well_known']),
+      oidcClientId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oidc_client_id']),
     );
   }
 
@@ -238,6 +253,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
   final String? olmAccount;
   final String? syncFilterId;
   final String? wellKnown;
+  final String? oidcClientId;
   const ClientDataData(
       {required this.id,
       required this.name,
@@ -251,7 +267,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       this.prevBatch,
       this.olmAccount,
       this.syncFilterId,
-      this.wellKnown});
+      this.wellKnown,
+      this.oidcClientId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -283,6 +300,9 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
     }
     if (!nullToAbsent || wellKnown != null) {
       map['well_known'] = Variable<String>(wellKnown);
+    }
+    if (!nullToAbsent || oidcClientId != null) {
+      map['oidc_client_id'] = Variable<String>(oidcClientId);
     }
     return map;
   }
@@ -318,6 +338,9 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       wellKnown: wellKnown == null && nullToAbsent
           ? const Value.absent()
           : Value(wellKnown),
+      oidcClientId: oidcClientId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oidcClientId),
     );
   }
 
@@ -338,6 +361,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       olmAccount: serializer.fromJson<String?>(json['olmAccount']),
       syncFilterId: serializer.fromJson<String?>(json['syncFilterId']),
       wellKnown: serializer.fromJson<String?>(json['wellKnown']),
+      oidcClientId: serializer.fromJson<String?>(json['oidcClientId']),
     );
   }
   @override
@@ -357,6 +381,7 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       'olmAccount': serializer.toJson<String?>(olmAccount),
       'syncFilterId': serializer.toJson<String?>(syncFilterId),
       'wellKnown': serializer.toJson<String?>(wellKnown),
+      'oidcClientId': serializer.toJson<String?>(oidcClientId),
     };
   }
 
@@ -373,7 +398,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           Value<String?> prevBatch = const Value.absent(),
           Value<String?> olmAccount = const Value.absent(),
           Value<String?> syncFilterId = const Value.absent(),
-          Value<String?> wellKnown = const Value.absent()}) =>
+          Value<String?> wellKnown = const Value.absent(),
+          Value<String?> oidcClientId = const Value.absent()}) =>
       ClientDataData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -391,6 +417,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
         syncFilterId:
             syncFilterId.present ? syncFilterId.value : this.syncFilterId,
         wellKnown: wellKnown.present ? wellKnown.value : this.wellKnown,
+        oidcClientId:
+            oidcClientId.present ? oidcClientId.value : this.oidcClientId,
       );
   ClientDataData copyWithCompanion(ClientDataCompanion data) {
     return ClientDataData(
@@ -417,6 +445,9 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           ? data.syncFilterId.value
           : this.syncFilterId,
       wellKnown: data.wellKnown.present ? data.wellKnown.value : this.wellKnown,
+      oidcClientId: data.oidcClientId.present
+          ? data.oidcClientId.value
+          : this.oidcClientId,
     );
   }
 
@@ -435,7 +466,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           ..write('prevBatch: $prevBatch, ')
           ..write('olmAccount: $olmAccount, ')
           ..write('syncFilterId: $syncFilterId, ')
-          ..write('wellKnown: $wellKnown')
+          ..write('wellKnown: $wellKnown, ')
+          ..write('oidcClientId: $oidcClientId')
           ..write(')'))
         .toString();
   }
@@ -454,7 +486,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
       prevBatch,
       olmAccount,
       syncFilterId,
-      wellKnown);
+      wellKnown,
+      oidcClientId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -471,7 +504,8 @@ class ClientDataData extends DataClass implements Insertable<ClientDataData> {
           other.prevBatch == this.prevBatch &&
           other.olmAccount == this.olmAccount &&
           other.syncFilterId == this.syncFilterId &&
-          other.wellKnown == this.wellKnown);
+          other.wellKnown == this.wellKnown &&
+          other.oidcClientId == this.oidcClientId);
 }
 
 class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
@@ -488,6 +522,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
   final Value<String?> olmAccount;
   final Value<String?> syncFilterId;
   final Value<String?> wellKnown;
+  final Value<String?> oidcClientId;
   const ClientDataCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -502,6 +537,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     this.olmAccount = const Value.absent(),
     this.syncFilterId = const Value.absent(),
     this.wellKnown = const Value.absent(),
+    this.oidcClientId = const Value.absent(),
   });
   ClientDataCompanion.insert({
     this.id = const Value.absent(),
@@ -517,6 +553,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     this.olmAccount = const Value.absent(),
     this.syncFilterId = const Value.absent(),
     this.wellKnown = const Value.absent(),
+    this.oidcClientId = const Value.absent(),
   })  : name = Value(name),
         homeserverUrl = Value(homeserverUrl),
         token = Value(token),
@@ -535,6 +572,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     Expression<String>? olmAccount,
     Expression<String>? syncFilterId,
     Expression<String>? wellKnown,
+    Expression<String>? oidcClientId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -550,6 +588,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       if (olmAccount != null) 'olm_account': olmAccount,
       if (syncFilterId != null) 'sync_filter_id': syncFilterId,
       if (wellKnown != null) 'well_known': wellKnown,
+      if (oidcClientId != null) 'oidc_client_id': oidcClientId,
     });
   }
 
@@ -566,7 +605,8 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       Value<String?>? prevBatch,
       Value<String?>? olmAccount,
       Value<String?>? syncFilterId,
-      Value<String?>? wellKnown}) {
+      Value<String?>? wellKnown,
+      Value<String?>? oidcClientId}) {
     return ClientDataCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -581,6 +621,7 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
       olmAccount: olmAccount ?? this.olmAccount,
       syncFilterId: syncFilterId ?? this.syncFilterId,
       wellKnown: wellKnown ?? this.wellKnown,
+      oidcClientId: oidcClientId ?? this.oidcClientId,
     );
   }
 
@@ -626,6 +667,9 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
     if (wellKnown.present) {
       map['well_known'] = Variable<String>(wellKnown.value);
     }
+    if (oidcClientId.present) {
+      map['oidc_client_id'] = Variable<String>(oidcClientId.value);
+    }
     return map;
   }
 
@@ -644,7 +688,8 @@ class ClientDataCompanion extends UpdateCompanion<ClientDataData> {
           ..write('prevBatch: $prevBatch, ')
           ..write('olmAccount: $olmAccount, ')
           ..write('syncFilterId: $syncFilterId, ')
-          ..write('wellKnown: $wellKnown')
+          ..write('wellKnown: $wellKnown, ')
+          ..write('oidcClientId: $oidcClientId')
           ..write(')'))
         .toString();
   }
@@ -5828,6 +5873,436 @@ class CachedProfileDataCompanion
   }
 }
 
+class $CustomCacheDataTable extends CustomCacheData
+    with TableInfo<$CustomCacheDataTable, CustomCacheDataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomCacheDataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+      'key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _savedAtMeta =
+      const VerificationMeta('savedAt');
+  @override
+  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
+      'saved_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [key, content, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'custom_cache_data';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<CustomCacheDataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+          _keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(_savedAtMeta,
+          savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta));
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  CustomCacheDataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CustomCacheDataData(
+      key: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+      savedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}saved_at'])!,
+    );
+  }
+
+  @override
+  $CustomCacheDataTable createAlias(String alias) {
+    return $CustomCacheDataTable(attachedDatabase, alias);
+  }
+}
+
+class CustomCacheDataData extends DataClass
+    implements Insertable<CustomCacheDataData> {
+  final String key;
+  final String content;
+  final DateTime savedAt;
+  const CustomCacheDataData(
+      {required this.key, required this.content, required this.savedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['content'] = Variable<String>(content);
+    map['saved_at'] = Variable<DateTime>(savedAt);
+    return map;
+  }
+
+  CustomCacheDataCompanion toCompanion(bool nullToAbsent) {
+    return CustomCacheDataCompanion(
+      key: Value(key),
+      content: Value(content),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory CustomCacheDataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomCacheDataData(
+      key: serializer.fromJson<String>(json['key']),
+      content: serializer.fromJson<String>(json['content']),
+      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'content': serializer.toJson<String>(content),
+      'savedAt': serializer.toJson<DateTime>(savedAt),
+    };
+  }
+
+  CustomCacheDataData copyWith(
+          {String? key, String? content, DateTime? savedAt}) =>
+      CustomCacheDataData(
+        key: key ?? this.key,
+        content: content ?? this.content,
+        savedAt: savedAt ?? this.savedAt,
+      );
+  CustomCacheDataData copyWithCompanion(CustomCacheDataCompanion data) {
+    return CustomCacheDataData(
+      key: data.key.present ? data.key.value : this.key,
+      content: data.content.present ? data.content.value : this.content,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomCacheDataData(')
+          ..write('key: $key, ')
+          ..write('content: $content, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, content, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomCacheDataData &&
+          other.key == this.key &&
+          other.content == this.content &&
+          other.savedAt == this.savedAt);
+}
+
+class CustomCacheDataCompanion extends UpdateCompanion<CustomCacheDataData> {
+  final Value<String> key;
+  final Value<String> content;
+  final Value<DateTime> savedAt;
+  final Value<int> rowid;
+  const CustomCacheDataCompanion({
+    this.key = const Value.absent(),
+    this.content = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CustomCacheDataCompanion.insert({
+    required String key,
+    required String content,
+    required DateTime savedAt,
+    this.rowid = const Value.absent(),
+  })  : key = Value(key),
+        content = Value(content),
+        savedAt = Value(savedAt);
+  static Insertable<CustomCacheDataData> custom({
+    Expression<String>? key,
+    Expression<String>? content,
+    Expression<DateTime>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (content != null) 'content': content,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CustomCacheDataCompanion copyWith(
+      {Value<String>? key,
+      Value<String>? content,
+      Value<DateTime>? savedAt,
+      Value<int>? rowid}) {
+    return CustomCacheDataCompanion(
+      key: key ?? this.key,
+      content: content ?? this.content,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomCacheDataCompanion(')
+          ..write('key: $key, ')
+          ..write('content: $content, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReadReceiptStateDataTable extends ReadReceiptStateData
+    with TableInfo<$ReadReceiptStateDataTable, ReadReceiptStateDataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReadReceiptStateDataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _roomIdMeta = const VerificationMeta('roomId');
+  @override
+  late final GeneratedColumn<String> roomId = GeneratedColumn<String>(
+      'room_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [roomId, content];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'read_receipt_state_data';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<ReadReceiptStateDataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('room_id')) {
+      context.handle(_roomIdMeta,
+          roomId.isAcceptableOrUnknown(data['room_id']!, _roomIdMeta));
+    } else if (isInserting) {
+      context.missing(_roomIdMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {roomId};
+  @override
+  ReadReceiptStateDataData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReadReceiptStateDataData(
+      roomId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}room_id'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+    );
+  }
+
+  @override
+  $ReadReceiptStateDataTable createAlias(String alias) {
+    return $ReadReceiptStateDataTable(attachedDatabase, alias);
+  }
+}
+
+class ReadReceiptStateDataData extends DataClass
+    implements Insertable<ReadReceiptStateDataData> {
+  final String roomId;
+  final String content;
+  const ReadReceiptStateDataData({required this.roomId, required this.content});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['room_id'] = Variable<String>(roomId);
+    map['content'] = Variable<String>(content);
+    return map;
+  }
+
+  ReadReceiptStateDataCompanion toCompanion(bool nullToAbsent) {
+    return ReadReceiptStateDataCompanion(
+      roomId: Value(roomId),
+      content: Value(content),
+    );
+  }
+
+  factory ReadReceiptStateDataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReadReceiptStateDataData(
+      roomId: serializer.fromJson<String>(json['roomId']),
+      content: serializer.fromJson<String>(json['content']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'roomId': serializer.toJson<String>(roomId),
+      'content': serializer.toJson<String>(content),
+    };
+  }
+
+  ReadReceiptStateDataData copyWith({String? roomId, String? content}) =>
+      ReadReceiptStateDataData(
+        roomId: roomId ?? this.roomId,
+        content: content ?? this.content,
+      );
+  ReadReceiptStateDataData copyWithCompanion(
+      ReadReceiptStateDataCompanion data) {
+    return ReadReceiptStateDataData(
+      roomId: data.roomId.present ? data.roomId.value : this.roomId,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReadReceiptStateDataData(')
+          ..write('roomId: $roomId, ')
+          ..write('content: $content')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(roomId, content);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReadReceiptStateDataData &&
+          other.roomId == this.roomId &&
+          other.content == this.content);
+}
+
+class ReadReceiptStateDataCompanion
+    extends UpdateCompanion<ReadReceiptStateDataData> {
+  final Value<String> roomId;
+  final Value<String> content;
+  final Value<int> rowid;
+  const ReadReceiptStateDataCompanion({
+    this.roomId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReadReceiptStateDataCompanion.insert({
+    required String roomId,
+    required String content,
+    this.rowid = const Value.absent(),
+  })  : roomId = Value(roomId),
+        content = Value(content);
+  static Insertable<ReadReceiptStateDataData> custom({
+    Expression<String>? roomId,
+    Expression<String>? content,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (roomId != null) 'room_id': roomId,
+      if (content != null) 'content': content,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReadReceiptStateDataCompanion copyWith(
+      {Value<String>? roomId, Value<String>? content, Value<int>? rowid}) {
+    return ReadReceiptStateDataCompanion(
+      roomId: roomId ?? this.roomId,
+      content: content ?? this.content,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (roomId.present) {
+      map['room_id'] = Variable<String>(roomId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReadReceiptStateDataCompanion(')
+          ..write('roomId: $roomId, ')
+          ..write('content: $content, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
   _$MatrixSdkDriftDBImplementation(QueryExecutor e) : super(e);
   $MatrixSdkDriftDBImplementationManager get managers =>
@@ -5862,6 +6337,10 @@ abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
   late final $PresenceDataTable presenceData = $PresenceDataTable(this);
   late final $CachedProfileDataTable cachedProfileData =
       $CachedProfileDataTable(this);
+  late final $CustomCacheDataTable customCacheData =
+      $CustomCacheDataTable(this);
+  late final $ReadReceiptStateDataTable readReceiptStateData =
+      $ReadReceiptStateDataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5887,7 +6366,9 @@ abstract class _$MatrixSdkDriftDBImplementation extends GeneratedDatabase {
         userDeviceKeyInfo,
         userCrossSigningKey,
         presenceData,
-        cachedProfileData
+        cachedProfileData,
+        customCacheData,
+        readReceiptStateData
       ];
   @override
   DriftDatabaseOptions get options =>
@@ -5908,6 +6389,7 @@ typedef $$ClientDataTableCreateCompanionBuilder = ClientDataCompanion Function({
   Value<String?> olmAccount,
   Value<String?> syncFilterId,
   Value<String?> wellKnown,
+  Value<String?> oidcClientId,
 });
 typedef $$ClientDataTableUpdateCompanionBuilder = ClientDataCompanion Function({
   Value<int> id,
@@ -5923,6 +6405,7 @@ typedef $$ClientDataTableUpdateCompanionBuilder = ClientDataCompanion Function({
   Value<String?> olmAccount,
   Value<String?> syncFilterId,
   Value<String?> wellKnown,
+  Value<String?> oidcClientId,
 });
 
 class $$ClientDataTableFilterComposer
@@ -5973,6 +6456,9 @@ class $$ClientDataTableFilterComposer
 
   ColumnFilters<String> get wellKnown => $composableBuilder(
       column: $table.wellKnown, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oidcClientId => $composableBuilder(
+      column: $table.oidcClientId, builder: (column) => ColumnFilters(column));
 }
 
 class $$ClientDataTableOrderingComposer
@@ -6026,6 +6512,10 @@ class $$ClientDataTableOrderingComposer
 
   ColumnOrderings<String> get wellKnown => $composableBuilder(
       column: $table.wellKnown, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oidcClientId => $composableBuilder(
+      column: $table.oidcClientId,
+      builder: (column) => ColumnOrderings(column));
 }
 
 class $$ClientDataTableAnnotationComposer
@@ -6075,6 +6565,9 @@ class $$ClientDataTableAnnotationComposer
 
   GeneratedColumn<String> get wellKnown =>
       $composableBuilder(column: $table.wellKnown, builder: (column) => column);
+
+  GeneratedColumn<String> get oidcClientId => $composableBuilder(
+      column: $table.oidcClientId, builder: (column) => column);
 }
 
 class $$ClientDataTableTableManager extends RootTableManager<
@@ -6118,6 +6611,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             Value<String?> olmAccount = const Value.absent(),
             Value<String?> syncFilterId = const Value.absent(),
             Value<String?> wellKnown = const Value.absent(),
+            Value<String?> oidcClientId = const Value.absent(),
           }) =>
               ClientDataCompanion(
             id: id,
@@ -6133,6 +6627,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             olmAccount: olmAccount,
             syncFilterId: syncFilterId,
             wellKnown: wellKnown,
+            oidcClientId: oidcClientId,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -6148,6 +6643,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             Value<String?> olmAccount = const Value.absent(),
             Value<String?> syncFilterId = const Value.absent(),
             Value<String?> wellKnown = const Value.absent(),
+            Value<String?> oidcClientId = const Value.absent(),
           }) =>
               ClientDataCompanion.insert(
             id: id,
@@ -6163,6 +6659,7 @@ class $$ClientDataTableTableManager extends RootTableManager<
             olmAccount: olmAccount,
             syncFilterId: syncFilterId,
             wellKnown: wellKnown,
+            oidcClientId: oidcClientId,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -9301,6 +9798,286 @@ typedef $$CachedProfileDataTableProcessedTableManager = ProcessedTableManager<
     ),
     CachedProfileDataData,
     PrefetchHooks Function()>;
+typedef $$CustomCacheDataTableCreateCompanionBuilder = CustomCacheDataCompanion
+    Function({
+  required String key,
+  required String content,
+  required DateTime savedAt,
+  Value<int> rowid,
+});
+typedef $$CustomCacheDataTableUpdateCompanionBuilder = CustomCacheDataCompanion
+    Function({
+  Value<String> key,
+  Value<String> content,
+  Value<DateTime> savedAt,
+  Value<int> rowid,
+});
+
+class $$CustomCacheDataTableFilterComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $CustomCacheDataTable> {
+  $$CustomCacheDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get savedAt => $composableBuilder(
+      column: $table.savedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$CustomCacheDataTableOrderingComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $CustomCacheDataTable> {
+  $$CustomCacheDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
+      column: $table.savedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CustomCacheDataTableAnnotationComposer
+    extends Composer<_$MatrixSdkDriftDBImplementation, $CustomCacheDataTable> {
+  $$CustomCacheDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$CustomCacheDataTableTableManager extends RootTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $CustomCacheDataTable,
+    CustomCacheDataData,
+    $$CustomCacheDataTableFilterComposer,
+    $$CustomCacheDataTableOrderingComposer,
+    $$CustomCacheDataTableAnnotationComposer,
+    $$CustomCacheDataTableCreateCompanionBuilder,
+    $$CustomCacheDataTableUpdateCompanionBuilder,
+    (
+      CustomCacheDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $CustomCacheDataTable,
+          CustomCacheDataData>
+    ),
+    CustomCacheDataData,
+    PrefetchHooks Function()> {
+  $$CustomCacheDataTableTableManager(
+      _$MatrixSdkDriftDBImplementation db, $CustomCacheDataTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CustomCacheDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CustomCacheDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CustomCacheDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<DateTime> savedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CustomCacheDataCompanion(
+            key: key,
+            content: content,
+            savedAt: savedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String key,
+            required String content,
+            required DateTime savedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CustomCacheDataCompanion.insert(
+            key: key,
+            content: content,
+            savedAt: savedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CustomCacheDataTableProcessedTableManager = ProcessedTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $CustomCacheDataTable,
+    CustomCacheDataData,
+    $$CustomCacheDataTableFilterComposer,
+    $$CustomCacheDataTableOrderingComposer,
+    $$CustomCacheDataTableAnnotationComposer,
+    $$CustomCacheDataTableCreateCompanionBuilder,
+    $$CustomCacheDataTableUpdateCompanionBuilder,
+    (
+      CustomCacheDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation, $CustomCacheDataTable,
+          CustomCacheDataData>
+    ),
+    CustomCacheDataData,
+    PrefetchHooks Function()>;
+typedef $$ReadReceiptStateDataTableCreateCompanionBuilder
+    = ReadReceiptStateDataCompanion Function({
+  required String roomId,
+  required String content,
+  Value<int> rowid,
+});
+typedef $$ReadReceiptStateDataTableUpdateCompanionBuilder
+    = ReadReceiptStateDataCompanion Function({
+  Value<String> roomId,
+  Value<String> content,
+  Value<int> rowid,
+});
+
+class $$ReadReceiptStateDataTableFilterComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $ReadReceiptStateDataTable> {
+  $$ReadReceiptStateDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$ReadReceiptStateDataTableOrderingComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $ReadReceiptStateDataTable> {
+  $$ReadReceiptStateDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get roomId => $composableBuilder(
+      column: $table.roomId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ReadReceiptStateDataTableAnnotationComposer extends Composer<
+    _$MatrixSdkDriftDBImplementation, $ReadReceiptStateDataTable> {
+  $$ReadReceiptStateDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get roomId =>
+      $composableBuilder(column: $table.roomId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
+class $$ReadReceiptStateDataTableTableManager extends RootTableManager<
+    _$MatrixSdkDriftDBImplementation,
+    $ReadReceiptStateDataTable,
+    ReadReceiptStateDataData,
+    $$ReadReceiptStateDataTableFilterComposer,
+    $$ReadReceiptStateDataTableOrderingComposer,
+    $$ReadReceiptStateDataTableAnnotationComposer,
+    $$ReadReceiptStateDataTableCreateCompanionBuilder,
+    $$ReadReceiptStateDataTableUpdateCompanionBuilder,
+    (
+      ReadReceiptStateDataData,
+      BaseReferences<_$MatrixSdkDriftDBImplementation,
+          $ReadReceiptStateDataTable, ReadReceiptStateDataData>
+    ),
+    ReadReceiptStateDataData,
+    PrefetchHooks Function()> {
+  $$ReadReceiptStateDataTableTableManager(
+      _$MatrixSdkDriftDBImplementation db, $ReadReceiptStateDataTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReadReceiptStateDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReadReceiptStateDataTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReadReceiptStateDataTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> roomId = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReadReceiptStateDataCompanion(
+            roomId: roomId,
+            content: content,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String roomId,
+            required String content,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReadReceiptStateDataCompanion.insert(
+            roomId: roomId,
+            content: content,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ReadReceiptStateDataTableProcessedTableManager
+    = ProcessedTableManager<
+        _$MatrixSdkDriftDBImplementation,
+        $ReadReceiptStateDataTable,
+        ReadReceiptStateDataData,
+        $$ReadReceiptStateDataTableFilterComposer,
+        $$ReadReceiptStateDataTableOrderingComposer,
+        $$ReadReceiptStateDataTableAnnotationComposer,
+        $$ReadReceiptStateDataTableCreateCompanionBuilder,
+        $$ReadReceiptStateDataTableUpdateCompanionBuilder,
+        (
+          ReadReceiptStateDataData,
+          BaseReferences<_$MatrixSdkDriftDBImplementation,
+              $ReadReceiptStateDataTable, ReadReceiptStateDataData>
+        ),
+        ReadReceiptStateDataData,
+        PrefetchHooks Function()>;
 
 class $MatrixSdkDriftDBImplementationManager {
   final _$MatrixSdkDriftDBImplementation _db;
@@ -9348,4 +10125,8 @@ class $MatrixSdkDriftDBImplementationManager {
       $$PresenceDataTableTableManager(_db, _db.presenceData);
   $$CachedProfileDataTableTableManager get cachedProfileData =>
       $$CachedProfileDataTableTableManager(_db, _db.cachedProfileData);
+  $$CustomCacheDataTableTableManager get customCacheData =>
+      $$CustomCacheDataTableTableManager(_db, _db.customCacheData);
+  $$ReadReceiptStateDataTableTableManager get readReceiptStateData =>
+      $$ReadReceiptStateDataTableTableManager(_db, _db.readReceiptStateData);
 }

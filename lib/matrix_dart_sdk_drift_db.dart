@@ -97,7 +97,10 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<void> clearCache() async {}
+  Future<void> clearCache() async {
+    await db.delete(db.customCacheData).go();
+    await db.delete(db.cachedProfileData).go();
+  }
 
   @override
   Future clearSSSSCache() {
@@ -187,6 +190,10 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
             .go();
 
         await (db.delete(db.roomData)
+              ..where((tbl) => tbl.roomId.equals(roomId)))
+            .go();
+
+        await (db.delete(db.readReceiptStateData)
               ..where((tbl) => tbl.roomId.equals(roomId)))
             .go();
       });
@@ -528,9 +535,18 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
       await db.transaction(() async {
         var allRooms = await db.select(db.roomData).get();
+        var allReceipts = await db.select(db.readReceiptStateData).get();
 
         for (var data in allRooms) {
           var room = Room.fromJson(jsonDecode(data.content), client);
+
+          var receipt =
+              allReceipts.where((i) => i.roomId == room.id).firstOrNull;
+          if (receipt != null) {
+            room.receiptState =
+                LatestReceiptState.fromJson(jsonDecode(receipt.content));
+          }
+
           rooms[room.id] = room;
         }
 
@@ -601,12 +617,23 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
         final room = Room.fromJson(jsonDecode(roomData.content), client);
 
+        var receiptState = await (db.select(db.readReceiptStateData)
+              ..where((tbl) => tbl.roomId.equals(roomId))
+              ..limit(1))
+            .getSingleOrNull();
+
         var roomAccountData = await (db.select(db.roomAccountData)
               ..where((tbl) => tbl.roomId.equals(roomId)))
             .get();
+
         for (var data in roomAccountData) {
           final event = BasicEvent.fromJson(jsonDecode(data.content));
           room.roomAccountData[event.type] = event;
+        }
+
+        if (receiptState != null) {
+          room.receiptState =
+              LatestReceiptState.fromJson(jsonDecode(receiptState.content));
         }
 
         if (loadImportantStates) {
@@ -759,6 +786,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       String userId,
       String? deviceId,
       String? deviceName,
+      String? oidcClientId,
       String? prevBatch,
       String? olmAccount) async {
     return runBenchmarked("Insert client", () async {
@@ -774,6 +802,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               deviceId: Value(deviceId),
               deviceName: Value(deviceName),
               prevBatch: Value(prevBatch),
+              oidcClientId: Value(oidcClientId),
               olmAccount: Value(olmAccount)));
     });
   }
@@ -1436,15 +1465,17 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future updateClient(
-      String homeserverUrl,
-      String token,
-      DateTime? tokenExpiresAt,
-      String? refreshToken,
-      String userId,
-      String? deviceId,
-      String? deviceName,
-      String? prevBatch,
-      String? olmAccount) async {
+    String homeserverUrl,
+    String token,
+    DateTime? tokenExpiresAt,
+    String? refreshToken,
+    String userId,
+    String? deviceId,
+    String? deviceName,
+    String? prevBatch,
+    String? olmAccount,
+    String? oidcClientId,
+  ) async {
     return runBenchmarked("Update client", () async {
       var existing = await (db.select(db.clientData)
             ..where((tbl) => tbl.id.equals(0)))
@@ -1466,7 +1497,8 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               deviceId: Value(deviceId),
               deviceName: Value(deviceName),
               prevBatch: Value(prevBatch),
-              olmAccount: Value(olmAccount)));
+              olmAccount: Value(olmAccount),
+              oidcClientId: Value(oidcClientId)));
     });
   }
 
@@ -1570,35 +1602,6 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
   }
 
   @override
-  Future<DiscoveryInformation?> getWellKnown() {
-    return runBenchmarked("Get well known", () async {
-      var data = await (db.select(db.clientData)).getSingleOrNull();
-
-      if (data?.wellKnown != null) {
-        return DiscoveryInformation.fromJson(jsonDecode(data!.wellKnown!));
-      }
-      return null;
-    });
-  }
-
-  @override
-  Future<void> storeWellKnown(DiscoveryInformation? discoveryInformation) {
-    return runBenchmarked("Store well known", () async {
-      var data = await (db.select(db.clientData)).getSingleOrNull();
-
-      if (data == null || discoveryInformation == null) {
-        return;
-      }
-
-      final info = jsonEncode(discoveryInformation.toJson());
-
-      await (db
-          .into(db.clientData)
-          .insertOnConflictUpdate(data.copyWith(wellKnown: Value(info))));
-    });
-  }
-
-  @override
   Future<bool> deleteFile(Uri mxcUri) async {
     // TODO: implement deleteFile
     return false;
@@ -1612,6 +1615,44 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               roomId: roomId,
               type: event.type,
               content: jsonEncode(event.toJson())));
+    });
+  }
+
+  @override
+  Future<void> cacheCustomObject(
+      String cacheKey, Map<String, Object?> object) async {
+    var time = DateTime.now();
+
+    await db.transaction(() async {
+      await db.into(db.customCacheData).insertOnConflictUpdate(
+          CustomCacheDataCompanion.insert(
+              key: cacheKey, content: jsonEncode(object), savedAt: time));
+    });
+  }
+
+  @override
+  Future<({Map<String, Object?> content, DateTime savedAt})?>
+      getCustomCacheObject(String cacheKey) async {
+    var data = await (db.select(db.customCacheData)
+          ..where((tbl) => tbl.key.equals(cacheKey))
+          ..limit(1))
+        .getSingleOrNull();
+
+    if (data == null) return null;
+
+    return (
+      content: jsonDecode(data.content) as Map<String, Object?>,
+      savedAt: data.savedAt
+    );
+  }
+
+  @override
+  Future<void> storeLatestReceiptState(
+      String roomId, LatestReceiptState receiptState) async {
+    await db.transaction(() async {
+      await db.into(db.readReceiptStateData).insertOnConflictUpdate(
+          ReadReceiptStateDataCompanion.insert(
+              roomId: roomId, content: jsonEncode(receiptState.toJson())));
     });
   }
 }
