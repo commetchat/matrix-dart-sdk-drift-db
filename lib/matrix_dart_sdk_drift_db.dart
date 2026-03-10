@@ -281,6 +281,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
       result["prev_batch"] = entry.prevBatch;
       result["olm_account"] = entry.olmAccount;
       result["sync_filter_id"] = entry.syncFilterId;
+      result["oidc_client_id"] = entry.oidcClientId;
       result.removeWhere((key, value) => value == null);
 
       return result;
@@ -778,17 +779,18 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future insertClient(
-      String name,
-      String homeserverUrl,
-      String token,
-      DateTime? tokenExpiresAt,
-      String? refreshToken,
-      String userId,
-      String? deviceId,
-      String? deviceName,
-      String? oidcClientId,
-      String? prevBatch,
-      String? olmAccount) async {
+    String name,
+    String homeserverUrl,
+    String token,
+    DateTime? tokenExpiresAt,
+    String? refreshToken,
+    String userId,
+    String? deviceId,
+    String? deviceName,
+    String? prevBatch,
+    String? olmAccount,
+    String? oidcClientId,
+  ) async {
     return runBenchmarked("Insert client", () async {
       await db.into(db.clientData).insertOnConflictUpdate(
           ClientDataCompanion.insert(
