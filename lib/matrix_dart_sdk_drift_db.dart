@@ -1021,9 +1021,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 tbl.userId.equals(userId) & tbl.publicKey.equals(publicKey)))
           .getSingleOrNull();
 
-      if (existing == null) {
-        return;
-      }
+      existing ??= UserCrossSigningKeyData(userId: userId, publicKey: publicKey, verified: verified, blocked: false);
 
       await db
           .into(db.userCrossSigningKey)
