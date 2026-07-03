@@ -700,62 +700,60 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
 
   @override
   Future<Map<String, DeviceKeysList>> getUserDeviceKeys(Client client) async {
-    // TODO: Why is this not implemented
-    return {};
-    // return db.transaction(() async {
-    //   var keyInfos = await db.select(db.userDeviceKeyInfo).get();
-    //   if (keyInfos.isEmpty) {
-    //     return {};
-    //   }
+    return db.transaction(() async {
+      var keyInfos = await db.select(db.userDeviceKeyInfo).get();
 
-    //   final keyIsOutdated = <String, bool>{
-    //     for (var entry in keyInfos) entry.userId: entry.outdated
-    //   };
+      if (keyInfos.isEmpty) {
+        return {};
+      }
 
-    //   final userDeviceKeys = await db.select(db.userDeviceKey).get();
+      final keyIsOutdated = <String, bool>{
+        for (var entry in keyInfos) entry.userId: entry.outdated
+      };
 
-    // final userCrossSigningKeys = await db.select(db.userCrossSigningKeys).get()
-    // final userCrossSigningKeys =
-    //     await instance.userCrossSigningKeys.where().findAll();
+      final userDeviceKeys = await db.select(db.userDeviceKey).get();
 
-    // final res = <String, DeviceKeysList>{};
+      final userCrossSigningKeys =
+          await db.select(db.userCrossSigningKey).get();
 
-    // for (final entry in keyInfos) {
-    //   var crossSigningKeys = userCrossSigningKeys
-    //       .where((element) => element.userId == entry.userId)
-    //       .toList();
+      final res = <String, DeviceKeysList>{};
 
-    //   var childEntries = userDeviceKeys
-    //       .where((element) => element.userId == entry.userId)
-    //       .toList();
+      for (final entry in keyInfos) {
+        var crossSigningKeys = userCrossSigningKeys
+            .where((element) => element.userId == entry.userId)
+            .toList();
 
-    //   res[entry.userId] = DeviceKeysList.fromDbJson(
-    //       {
-    //         'client_id': client.id,
-    //         'user_id': entry.userId,
-    //         'outdated': keyIsOutdated[entry.userId],
-    //       },
-    //       childEntries
-    //           .map((e) => {
-    //                 "device_id": e.deviceId,
-    //                 "verified": e.verified,
-    //                 "blocked": e.blocked,
-    //                 "content": jsonDecode(e.content)
-    //               })
-    //           .toList(),
-    //       crossSigningKeys
-    //           .map((e) => <String, dynamic>{
-    //                 "public_key": e.publicKey,
-    //                 "verified": e.verified,
-    //                 "blocked": e.blocked,
-    //                 "content": jsonDecode(e.content ?? "{}")
-    //               })
-    //           .toList(),
-    //       client);
-    // }
+        var childEntries = userDeviceKeys
+            .where((element) => element.userId == entry.userId)
+            .toList();
 
-    // return res;
-    // });
+        res[entry.userId] = DeviceKeysList.fromDbJson(
+            {
+              'client_id': client.id,
+              'user_id': entry.userId,
+              'outdated': keyIsOutdated[entry.userId],
+            },
+            childEntries
+                .map((e) => {
+                      "device_id": e.deviceId,
+                      "verified": e.verified,
+                      "blocked": e.blocked,
+                      "content": jsonDecode(e.content)
+                    })
+                .toList(),
+            crossSigningKeys
+                .map((e) => <String, dynamic>{
+                      "public_key": e.publicKey,
+                      "verified": e.verified,
+                      "blocked": e.blocked,
+                      "content": jsonDecode(e.content ?? "{}")
+                    })
+                .toList(),
+            client);
+      }
+
+      return res;
+    });
   }
 
   @override
@@ -1021,7 +1019,11 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
                 tbl.userId.equals(userId) & tbl.publicKey.equals(publicKey)))
           .getSingleOrNull();
 
-      existing ??= UserCrossSigningKeyData(userId: userId, publicKey: publicKey, verified: verified, blocked: false);
+      existing ??= UserCrossSigningKeyData(
+          userId: userId,
+          publicKey: publicKey,
+          verified: verified,
+          blocked: false);
 
       await db
           .into(db.userCrossSigningKey)
@@ -1431,6 +1433,7 @@ class MatrixSdkDriftDatabase implements DatabaseApi {
               userId: userId,
               publicKey: publicKey,
               verified: verified,
+              content: Value(content),
               blocked: blocked));
     });
   }
